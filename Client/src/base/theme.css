@@ -1,8 +1,12 @@
 .button_reg{
     background: rgb(253, 253, 253);
     border-radius:30px ;
-    margin-top: 400px;
+    margin-top: 400%;
 }
 .window{
-    background: black;
+    background: rgb(0, 140, 255);
+}
+.label{
+    display: block;
+    background: rgb(1, 255, 255);
 }
