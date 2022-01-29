@@ -7,16 +7,37 @@ void change_password (GtkWidget *button, GdkEvent *event, gpointer user_data) {
   window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
   /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
+
+  GtkWidget *main_layout;
+  GtkWidget *label_secret_word;
+  GtkWidget *change_password_layout2;
   GtkButton *apply_btn;
-  GtkWidget *change_password_layout;
-  change_password_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add (GTK_CONTAINER (window), change_password_layout);
+  GtkWidget *change_password_layout1;
+  GtkWidget *entry_for_word;
+
+
+  main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (window), main_layout);
+  change_password_layout2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (main_layout), change_password_layout2);
+  change_password_layout1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (main_layout), change_password_layout1);
+
+  label_secret_word = gtk_label_new("Введите секретное слово");
+  gtk_container_add (GTK_CONTAINER (change_password_layout2), GTK_WIDGET(label_secret_word));
+
+  entry_for_word = gtk_entry_new();
+  gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_word), "Secret word");
+  //gtk_entry_set_text(GTK_ENTRY(emailEntry),"");
+  gtk_container_add (GTK_CONTAINER (change_password_layout2), GTK_WIDGET(entry_for_word));
+  
 
 
   apply_btn = GTK_BUTTON(gtk_button_new());
   gtk_button_set_label(apply_btn, "OK");
   g_signal_connect (apply_btn, "clicked", G_CALLBACK (open_chat), window);
-  gtk_container_add (GTK_CONTAINER (change_password_layout), GTK_WIDGET(apply_btn));
+  gtk_container_add (GTK_CONTAINER (change_password_layout1), GTK_WIDGET(apply_btn));
+
   gtk_widget_show_all (window);
 }
 
