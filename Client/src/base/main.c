@@ -1,8 +1,23 @@
 #include "client.h"
 
+void open_chat (GtkWidget *window, GdkEvent *event, gpointer user_data);
+
 void change_password (GtkWidget *button, GdkEvent *event, gpointer user_data) {
+  GtkWidget *window;
+  window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
-    /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
+  /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
+  GtkButton *apply_btn;
+  GtkWidget *change_password_layout;
+  change_password_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (window), change_password_layout);
+
+
+  apply_btn = GTK_BUTTON(gtk_button_new());
+  gtk_button_set_label(apply_btn, "OK");
+  g_signal_connect (apply_btn, "clicked", G_CALLBACK (open_chat), window);
+  gtk_container_add (GTK_CONTAINER (change_password_layout), GTK_WIDGET(apply_btn));
+  gtk_widget_show_all (window);
 }
 
 void open_chat (GtkWidget *window, GdkEvent *event, gpointer user_data) 
