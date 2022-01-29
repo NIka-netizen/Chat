@@ -1,12 +1,23 @@
-.button_reg{
+
+.button {
+    margin-top: 100px;
+    align-items: baseline;
+}
+
+.button_reg, .button_log, .change_password{
     background: rgb(253, 253, 253);
     border-radius:30px ;
-    margin-top: 400%;
 }
+
+.change_password {
+    margin-top: 100px;
+}
+
 .window{
     background: rgb(0, 140, 255);
 }
-.label{
-    display: block;
+.edit{
+
     background: rgb(1, 255, 255);
 }
+

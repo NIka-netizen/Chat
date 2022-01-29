@@ -1,20 +1,20 @@
 #include "client.h"
 
-void change_password (GtkWidget *window, GdkEvent *event, gpointer user_data) {
-  gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(window))));
+void change_password (GtkWidget *button, GdkEvent *event, gpointer user_data) {
+  gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
     /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
 }
 
 void open_chat (GtkWidget *window, GdkEvent *event, gpointer user_data) 
 { 
-   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(window))));
+   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(window)));
     /*  ВОТ ТУТ ОКНО С ЧАТОМ */
 }
 
 void open_reg (GtkWidget *window, GdkEvent *event, gpointer user_data) 
 { 
 
-   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(window))));
+   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(window)));
     /*  ВОТ ТУТ ОКНО С РЕГИСТРАЦИЕЙ */
     
 }
@@ -38,6 +38,8 @@ static void activate (GtkApplication *app, gpointer user_data)
   gtk_window_set_title (GTK_WINDOW (window), "Registration");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
   gtk_window_set_default_size (GTK_WINDOW (window), 1000, 500);
+
+  
 
   main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (window), main_box);
@@ -82,24 +84,53 @@ GtkCssProvider *provider = gtk_css_provider_new ();
  gtk_css_provider_load_from_path (provider, "/Users/vostroverk/Desktop/uchat/Client/src/base/theme.css", NULL);
 
 //css add selector
-GtkStyleContext *context;
-context = gtk_widget_get_style_context(button_reg);
-gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-gtk_style_context_add_class(context,"button_reg");
 
- GtkStyleContext *context2;
- context2 = gtk_widget_get_style_context(window);
- gtk_style_context_add_provider (context2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
- gtk_style_context_add_class(context2,"window");
+for (int i = 0; i < 2; i++) {
+  GtkStyleContext *context6;
+  context6 = gtk_widget_get_style_context(label[i]);
+  gtk_style_context_add_provider (context6, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  gtk_style_context_add_class(context6,"label");
 
-for (int i = 0 ; i <= 1 ; i++)
-{
-  GtkStyleContext *context;
-  context = gtk_widget_get_style_context(edit[i]);
-  gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context,"label");
+  GtkStyleContext *context7;
+  context7 = gtk_widget_get_style_context(edit[i]);
+  gtk_style_context_add_provider (context7, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  gtk_style_context_add_class(context7,"edit");
 }
+
+GtkStyleContext *context8;
+context8 = gtk_widget_get_style_context(button_reg);
+gtk_style_context_add_provider (context8, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+gtk_style_context_add_class(context8,"button_log");
+
+GtkStyleContext *context5;
+context5 = gtk_widget_get_style_context(button_log);
+gtk_style_context_add_provider (context5, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+gtk_style_context_add_class(context5,"button_log");
+
+/* КОНТЕЙНЕРЫ */
+
+GtkStyleContext *context;
+context = gtk_widget_get_style_context(button_box);
+gtk_style_context_add_provider (context, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+gtk_style_context_add_class(context,"button");
+
+GtkStyleContext *context2;
+context2 = gtk_widget_get_style_context(forg_password);
+gtk_style_context_add_provider (context2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+gtk_style_context_add_class(context2,"change_password");
+
+ GtkStyleContext *context3;
+ context3 = gtk_widget_get_style_context(window);
+ gtk_style_context_add_provider (context3, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+ gtk_style_context_add_class(context3,"window");
+
+GtkStyleContext *context4;
+ context4 = gtk_widget_get_style_context(label_edit_box);
+ gtk_style_context_add_provider (context4, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+ gtk_style_context_add_class(context4,"label_edit");
+
   gtk_widget_show_all (window);
+  
 }
 
 int main (int argc, char **argv)
