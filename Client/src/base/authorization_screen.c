@@ -35,13 +35,13 @@ void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_da
 
   apply_btn = GTK_BUTTON(gtk_button_new());
   gtk_button_set_label(apply_btn, "OK");
-  g_signal_connect(apply_btn, "clicked", G_CALLBACK(open_authorezation), window); // ВОТ ТУТ ФУНКЦИЮ ПОМЕНЯТЬ!
+  g_signal_connect(apply_btn, "clicked", G_CALLBACK(open_authorezation), window); 
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
 
   gtk_widget_show_all(window);
 }
 
-void change_password(GtkWidget *button, GdkEvent *event, gpointer user_data)
+void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 {
   GtkWidget *window;
   window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
@@ -141,7 +141,7 @@ void open_authorezation(GtkWidget *button, GdkEvent *event, gpointer user_data)
   gtk_container_add(GTK_CONTAINER(button_box), button_reg);
 
   forg_password = gtk_button_new_with_label("Forgot password");
-  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(change_password), window);
+  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_change_password), window);
   gtk_container_add(GTK_CONTAINER(change_password_box), forg_password);
 
   //css link
