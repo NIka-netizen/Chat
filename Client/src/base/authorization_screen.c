@@ -79,7 +79,7 @@ void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 void open_authorezation(GtkWidget *button, GdkEvent *event, gpointer user_data)
 {
   GtkWidget *window;
-  if (event!=NULL){
+  if (event != NULL){
   window = gtk_widget_get_parent(gtk_widget_get_parent(button));
   gtk_widget_destroy(gtk_widget_get_parent(button));
   }
@@ -141,7 +141,7 @@ void open_authorezation(GtkWidget *button, GdkEvent *event, gpointer user_data)
   gtk_container_add(GTK_CONTAINER(button_box), button_reg);
 
   forg_password = gtk_button_new_with_label("Forgot password");
-  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_change_password), window);
+  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
   gtk_container_add(GTK_CONTAINER(change_password_box), forg_password);
 
   //css link
