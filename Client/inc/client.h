@@ -22,4 +22,11 @@
 
 #include "libmx.h"
 
+void open_chat(GtkWidget *window, GdkEvent *event, gpointer user_data);
+void open_authorezation(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void open_chat(GtkWidget *window, GdkEvent *event, gpointer user_data);
+void window_secret_word(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_data);
+
 //#define BACKIMAGE_PATH "./Resources/images/back.jpg"
