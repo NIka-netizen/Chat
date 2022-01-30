@@ -1,0 +1,22 @@
+
+.button {
+    margin-top: 100px;
+}
+
+.button_reg, .button_log, .change_password{
+    background: rgb(253, 253, 253);
+    border-radius:30px ;
+}
+
+.change_password {
+    margin-top: 100px;
+}
+
+.window{
+    background: rgb(108, 70, 139);
+}
+.edit{
+    border-color: peachpuff;
+    background: rgb(252, 244, 210);
+}
+
