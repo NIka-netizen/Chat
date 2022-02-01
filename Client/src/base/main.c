@@ -10,7 +10,7 @@ static void activate(GtkApplication *app, gpointer user_data)
   gtk_container_set_border_width(GTK_CONTAINER(window), 10);
   gtk_window_set_default_size(GTK_WINDOW(window), 1000, 500);
 
-  open_authorezation(window, NULL, NULL);
+  open_authorezation(window, "start_app");
 }
 
 int main(int argc, char **argv)

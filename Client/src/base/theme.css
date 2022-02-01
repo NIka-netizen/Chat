@@ -53,7 +53,10 @@
     margin-right: 200PX;
 }
 .button_log1{
-    background-color: black;
+    /*background-image: url("/Users/vostroverk/Desktop/uchat/Content/avatar.png");*/
+    background-size: 100%;
+    background-repeat: no-repeat;
+
 }
 .change_password{
     background: yellow;
@@ -62,4 +65,7 @@
 .button{
     background: yellowgreen;
     
+}
+.button_ex{
+    width: 30%;
 }
