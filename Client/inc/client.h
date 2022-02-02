@@ -9,11 +9,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <sys/socket.h>
 #include <sys/socketvar.h>
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <netdb.h>
+#define SA struct sockaddr
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -22,10 +24,11 @@
 
 #include "libmx.h"
 
+void set_connection ();
 void open_chat(GtkWidget *window, GdkEvent *event, gpointer user_data);
-void open_authorezation(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void open_authorezation(GtkWidget *button, char *event);
 void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data);
-void open_chat(GtkWidget *window, GdkEvent *event, gpointer user_data);
+void open_chat(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void window_secret_word(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_data);
 
