@@ -24,12 +24,38 @@
 
 #include "libmx.h"
 
-void set_connection ();
-void open_chat(GtkWidget *window, GdkEvent *event, gpointer user_data);
+struct data_check_SW{
+    char *login;
+    char *secret_word;
+} check_start;
+
+struct data_change_password{
+    char *login;
+    char *password;
+} check_second;
+
+struct data_input_registration {
+    char *login;
+    char *password;
+    char *nickname;
+    char *secret_word;
+} data_registration;
+
+struct data_input_authorization{
+    char *login;
+    char *password;
+} authorization_data;
+
+char *write_to_json(char* num_f,char **arr_new);
+void data_to_str_authorization();
+void data_to_str_change_password();
+void data_to_str_check_SW();
+void data_to_str_registration();
+void set_connection(char *answer);
 void open_authorezation(GtkWidget *button, char *event);
 void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data);
-void open_chat(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void open_chat(GtkWidget *button);
 void window_secret_word(GtkWidget *button, GdkEvent *event, gpointer user_data);
-void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void window_change_password(GtkWidget *button);
 
 //#define BACKIMAGE_PATH "./Resources/images/back.jpg"

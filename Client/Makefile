@@ -2,9 +2,9 @@ CC = clang
 LIB = libmx.a
 NAME = uchat
 
-base = main authorization_screen chat_screen registration_screen \
+base = main authorization_screen chat_screen registration_screen write_to_json \
 
-connection = connection_serv \
+connection = connection_serv data_to_str \
 
 dirs = base connection \
 

@@ -2,7 +2,8 @@
 GtkWidget *entry_login, *entry_for_nickname, *entry_password, *entry_repeat_password, *entry_secret_word;
 GtkWidget *Error_login, *Error_nickname, *Error_password, *Error_repeat_password, *Error_secret_word;
 
-void reopen_authorezation(GtkWidget *button){
+void reopen_authorezation(GtkWidget *button)
+{
   open_authorezation(button, "registration");
 }
 
@@ -14,7 +15,7 @@ int signup_button_clicked()
   const gchar *nickname = gtk_entry_get_text(GTK_ENTRY(entry_for_nickname)); 
   const gchar *secret_word = gtk_entry_get_text(GTK_ENTRY(entry_secret_word));  
 
-/* ПРОВЕРКА ЛОГИНА */
+  /* ПРОВЕРКА ЛОГИНА */
   int length = mx_strlen(login);
   int checker = 0;
 
@@ -37,7 +38,7 @@ int signup_button_clicked()
       }
     }
   } 
-/* ПРОВЕРКА ПАРОЛЯ */
+  /* ПРОВЕРКА ПАРОЛЯ */
   length = mx_strlen(password);
   int digit = 0;
   int alpha = 0;
@@ -64,7 +65,7 @@ int signup_button_clicked()
   else {
     gtk_label_set_text(GTK_LABEL(Error_password), "");
   }
-/* ПРОВЕРКА НА СХОДИМОСТЬ ПАРОЛЕЙ */
+  /* ПРОВЕРКА НА СХОДИМОСТЬ ПАРОЛЕЙ */
   if (mx_strcmp(password, repeat_password) != 0) {
     gtk_label_set_text(GTK_LABEL(Error_repeat_password),"Password mismatch");  
     checker++;
@@ -74,7 +75,7 @@ int signup_button_clicked()
   else {
     gtk_label_set_text(GTK_LABEL(Error_repeat_password), ""); 
   }
-/* ПРОВЕРКА НА НИКНЕЙМ*/
+  /* ПРОВЕРКА НА НИКНЕЙМ*/
   length = mx_strlen(nickname);
   if (length < 1) {
     gtk_label_set_text(GTK_LABEL(Error_nickname),"Nickname must be one or more characters");  
@@ -84,10 +85,10 @@ int signup_button_clicked()
   else {
     gtk_label_set_text(GTK_LABEL(Error_nickname), ""); 
   }
-/* ПРОВЕРКА НА СЕКРЕТНОЕ СЛОВО*/
+  /* ПРОВЕРКА НА СЕКРЕТНОЕ СЛОВО*/
   length = mx_strlen(secret_word);
   if (length < 3) {
-    gtk_label_set_text(GTK_LABEL(Error_secret_word),"Login must be from 3 characters and contain only Latin characters, numbers or underscore");  
+    gtk_label_set_text(GTK_LABEL(Error_secret_word),"Secret word must be from 3 characters and contain only Latin characters, numbers or underscore");  
     checker++;
     gtk_entry_set_text(GTK_ENTRY(entry_secret_word),"");
   }
@@ -96,7 +97,7 @@ int signup_button_clicked()
     for (int i = 0; i < length; i++) {
       if(!mx_isdigit(secret_word[i]) && !mx_isalpha(secret_word[i]) && secret_word[i] != '_')
       {
-        gtk_label_set_text(GTK_LABEL(Error_secret_word),"Login must be from 3 characters and contain only Latin characters, numbers or underscore");  
+        gtk_label_set_text(GTK_LABEL(Error_secret_word),"Secret word must be from 3 characters and contain only Latin characters, numbers or underscore");  
         checker++;
         gtk_entry_set_text(GTK_ENTRY(entry_secret_word),"");
       }
@@ -109,6 +110,19 @@ int signup_button_clicked()
   if (checker > 0) {
     return 1;
   }
+  data_registration.login = mx_strnew(mx_strlen((char *)login));
+  mx_strcpy(data_registration.login, (char *)login);
+
+  data_registration.password = mx_strnew(mx_strlen((char *)password));
+  mx_strcpy(data_registration.password, (char *)password);
+
+  data_registration.nickname = mx_strnew(mx_strlen((char *)nickname));
+  mx_strcpy(data_registration.nickname, (char *)nickname);
+
+  data_registration.secret_word = mx_strnew(mx_strlen((char *)secret_word));
+  mx_strcpy(data_registration.secret_word, (char *)secret_word);
+
+  data_to_str_registration ();
   gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
   gtk_entry_set_text(GTK_ENTRY(entry_for_nickname),"");
   gtk_entry_set_text(GTK_ENTRY(entry_password),"");
@@ -117,7 +131,8 @@ int signup_button_clicked()
   return 0;
 } 
 
-void save_user (GtkWidget *button, GdkEvent *event, gpointer user_data) {
+void save_user (GtkWidget *button, GdkEvent *event, gpointer user_data) 
+{
   GtkWidget *window;
   window = gtk_widget_get_parent(gtk_widget_get_parent(button));
 
@@ -204,29 +219,6 @@ void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data)
 
   
   gtk_container_add(GTK_CONTAINER(main_layout), button_layout);
-
-  // gtk_box_pack_start(GTK_BOX(main_layout),label_login,FALSE,FALSE,0);
-  // gtk_box_pack_start(GTK_BOX(main_layout),entry_login,FALSE,FALSE,0);
-  // gtk_box_pack_start(GTK_BOX(main_layout),showEmail[1],FALSE,FALSE,0); 
-
-  // gtk_box_pack_start(GTK_BOX(main_layout),label_for_nickname,FALSE,FALSE,0);
-  // gtk_box_pack_start(GTK_BOX(main_layout),entry_for_nickname,FALSE,FALSE,0); 
-  //  gtk_box_pack_start(GTK_BOX(main_layout),showEmail[2],FALSE,FALSE,0); 
-
-  // gtk_box_pack_start(GTK_BOX(main_layout),label_password,FALSE,FALSE,0); 
-  // gtk_box_pack_start(GTK_BOX(main_layout),entry_password,FALSE,FALSE,0); 
-  //  gtk_box_pack_start(GTK_BOX(main_layout),showEmail[3],FALSE,FALSE,0); 
-
-
-  // gtk_box_pack_start(GTK_BOX(main_layout),label_repeat_password,FALSE,FALSE,0);
-  // gtk_box_pack_start(GTK_BOX(main_layout),entry_repeat_password,FALSE,FALSE,0);  
-  //  gtk_box_pack_start(GTK_BOX(main_layout),showEmail[4],FALSE,FALSE,0);  
-  
-  // gtk_box_pack_start(GTK_BOX(main_layout),label_secret_word,FALSE,FALSE,0); 
-  // gtk_box_pack_start(GTK_BOX(main_layout),entry_secret_word,FALSE,FALSE,0);  
-  //  gtk_box_pack_start(GTK_BOX(main_layout),showEmail[5],FALSE,FALSE,0); 
-  
-  // gtk_box_pack_start(GTK_BOX(main_layout),apply_btn,FALSE,FALSE,0);  
 
   gtk_container_add(GTK_CONTAINER(window), main_layout);
 

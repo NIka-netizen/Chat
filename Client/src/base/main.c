@@ -15,7 +15,6 @@ static void activate(GtkApplication *app, gpointer user_data)
 
 int main(int argc, char **argv)
 {
-  set_connection();
   GtkApplication *app;
   int status;
   app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);

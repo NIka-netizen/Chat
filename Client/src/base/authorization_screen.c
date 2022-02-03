@@ -1,16 +1,84 @@
 #include "client.h"
-GtkWidget *entry_for_new_password, *entry_for_repeat_password;
-GtkWidget *Error_password, *Error_repeat_password;
+GtkWidget *entry_for_new_password, *entry_for_repeat_password, *edit[2];
+GtkWidget *Error_password, *Error_repeat_password, *Error_login, *Error_secret_word;
+GtkWidget *entry_login, *entry_for_word;
 
 void reopen_authorezation2(GtkWidget *button){
   open_authorezation(button, "forgot_password");
 }
 
-int validation()
+/* КОРРЕКТНОСТЬ ВВОДА ЛОГИНА И СЕКРЕТНОГО СЛОВА И ОТПРАВКА ДАННЫХ */
+int validation_login_secWord () 
+{
+  const gchar *login = gtk_entry_get_text(GTK_ENTRY(entry_login)); 
+  const gchar *secret_word = gtk_entry_get_text(GTK_ENTRY(entry_for_word)); 
+
+  /* ПРОВЕРКА ЛОГИНА */
+  int length = mx_strlen(login);
+  int checker = 0;
+
+  if (length < 6 || length >= 20) 
+  {
+    gtk_label_set_text(GTK_LABEL(Error_login),"Wrong login");  
+    checker++;
+  }
+  else {
+    for (int i = 0; i < length; i++) {
+      if (!mx_isdigit(login[i]) && !mx_isalpha(login[i]) && login[i] != '_') {
+        gtk_label_set_text(GTK_LABEL(Error_login),"Wrong login");  
+        checker++;
+        gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
+        break;
+      }
+      else {
+        gtk_label_set_text(GTK_LABEL(Error_login), ""); 
+    
+      }
+    }
+  } 
+  /* ПРОВЕРКА НА СЕКРЕТНОЕ СЛОВО*/
+  length = mx_strlen(secret_word);
+  if (length < 3) {
+    gtk_label_set_text(GTK_LABEL(Error_secret_word),"Wrong secret word");  
+    checker++;
+    gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+  }
+  else
+  {
+    for (int i = 0; i < length; i++) {
+      if(!mx_isdigit(secret_word[i]) && !mx_isalpha(secret_word[i]) && secret_word[i] != '_')
+      {
+        gtk_label_set_text(GTK_LABEL(Error_secret_word),"Wrong secret word");  
+        checker++;
+        gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+      }
+      else 
+      {
+        gtk_label_set_text(GTK_LABEL(Error_secret_word), ""); 
+      }
+    }
+  }
+  if (checker > 0) {
+    return 1;
+  }
+  check_second.login = mx_strnew(mx_strlen((char *)login));
+  mx_strcpy(check_second.login, (char *)login);
+  check_start.login = mx_strnew(mx_strlen((char *)login));
+  mx_strcpy(check_start.login, (char *)login);
+  check_start.secret_word = mx_strnew(mx_strlen((char *)secret_word));
+  mx_strcpy( check_start.secret_word, (char *)secret_word);
+  data_to_str_check_SW();
+  gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
+  gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+  return 0;
+}
+
+/* КОРРЕКТНОСТЬ ВВОДА ПАРОЛЯ И ОТПРАВКА ДАННЫХ */
+int validation_passwords()
 {
   const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry_for_new_password)); 
   const gchar *repeat_password = gtk_entry_get_text(GTK_ENTRY(entry_for_repeat_password));
-/* ПРОВЕРКА ПАРОЛЯ */
+  /* ПРОВЕРКА ПАРОЛЯ */
   int length = mx_strlen(password);
   int digit = 0;
   int alpha = 0;
@@ -38,7 +106,7 @@ int validation()
   else {
     gtk_label_set_text(GTK_LABEL(Error_password), "");
   }
-/* ПРОВЕРКА НА СХОДИМОСТЬ ПАРОЛЕЙ */
+  /* ПРОВЕРКА НА СХОДИМОСТЬ ПАРОЛЕЙ */
   if (mx_strcmp(password, repeat_password) != 0) {
     gtk_label_set_text(GTK_LABEL(Error_repeat_password),"Password mismatch");  
     checker++;
@@ -51,27 +119,49 @@ int validation()
   if (checker > 0) {
     return 1;
   }
+  check_second.password = mx_strnew(mx_strlen((char *)password));
+  mx_strcpy(check_second.password, (char *)password);
+  data_to_str_change_password();
   gtk_entry_set_text(GTK_ENTRY(entry_for_new_password),"");
   gtk_entry_set_text(GTK_ENTRY(entry_for_repeat_password),"");
   return 0;
 } 
 
-void save_user2 (GtkWidget *button, GdkEvent *event, gpointer user_data) {
+/* ПРОВОДНИК 1 */
+void valid_data_SW_login (GtkWidget *button, GdkEvent *event, gpointer user_data) {
   GtkWidget *window;
   window = gtk_widget_get_parent(gtk_widget_get_parent(button));
-
-  if (!validation()) {
-    reopen_authorezation2(button);
+  if (!validation_login_secWord()) {
+    window_change_password(button);
   }
 }
 
-void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_data)
+/* ПРОВОДНИК 2 */
+void valid_data_passwords(GtkWidget *button, GdkEvent *event, gpointer user_data) {
+  GtkWidget *window;
+  window = gtk_widget_get_parent(gtk_widget_get_parent(button));
+  if (!validation_passwords())
+    reopen_authorezation2(button);
+}
+
+void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer user_data) {
+  const gchar *login = gtk_entry_get_text(GTK_ENTRY(edit[0]));;
+  const gchar *password = gtk_entry_get_text(GTK_ENTRY(edit[1]));;
+  authorization_data.login = mx_strnew(mx_strlen((char *)login));
+  mx_strcpy(authorization_data.login, (char *)login);
+  authorization_data.password = mx_strnew(mx_strlen((char *)password));
+  mx_strcpy( authorization_data.password, (char *)password);
+  data_to_str_authorization ();
+  open_chat(button);
+}
+
+/* ОКНО СО СМЕНОЙ ПАРОЛЯ */
+void window_change_password(GtkWidget *button)
 {
   GtkWidget *window;
   window = gtk_widget_get_parent(gtk_widget_get_parent(button));
   gtk_widget_destroy(gtk_widget_get_parent(button));
   /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
-
   GtkWidget *main_layout;
   GtkWidget *label_new_password;
   GtkWidget *label_repeat_password;
@@ -104,13 +194,14 @@ void window_change_password(GtkWidget *button, GdkEvent *event, gpointer user_da
   apply_btn = GTK_BUTTON(gtk_button_new());
   gtk_button_set_label(apply_btn, "OK");
 
-  g_signal_connect(apply_btn, "clicked", G_CALLBACK(save_user2), window); 
+  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_passwords), window); 
 
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
 
   gtk_widget_show_all(window);
 }
 
+/* ОКНО С СЕКРЕТНЫМ СЛОВОМ И ЛОГИНОМ */
 void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 {
   GtkWidget *window;
@@ -122,38 +213,37 @@ void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 
   GtkWidget *label_secret_word;
   GtkWidget *label_login;
-
   GtkButton *apply_btn;
 
-  GtkWidget *entry_for_word;
-  GtkWidget *entry_login;
+  Error_login = gtk_label_new("");
+  Error_secret_word = gtk_label_new("");
 
   main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add(GTK_CONTAINER(window), main_layout);
 
   label_login = gtk_label_new("Enter your login");
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_login));
-
   entry_login = gtk_entry_new();
   gtk_entry_set_placeholder_text(GTK_ENTRY(entry_login), "Login");
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_login));
+  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_login));
 
   label_secret_word = gtk_label_new("Enter the secret word");
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_secret_word));
-
   entry_for_word = gtk_entry_new();
   gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_word), "Secret word");
-  //gtk_entry_set_text(GTK_ENTRY(emailEntry),"");
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_word));
+  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_secret_word));
 
   apply_btn = GTK_BUTTON(gtk_button_new());
   gtk_button_set_label(apply_btn, "OK");
-  g_signal_connect(apply_btn, "clicked", G_CALLBACK(window_change_password), window);
+  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_SW_login), window);
   gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
 
   gtk_widget_show_all(window);
 }
 
+/* ОКНО С АВТОРИЗАЦИЕЙ */
 void open_authorezation(GtkWidget *button, char *event)
 {
   GtkWidget *window;
@@ -180,16 +270,9 @@ void open_authorezation(GtkWidget *button, char *event)
   GtkWidget *main_box;
   GtkWidget *change_password_box;
   GtkWidget *label[2];
-  GtkWidget *edit[2];
 
   main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add(GTK_CONTAINER(window), main_box);
-
-  // label_edit_box = gtk_button_box_new(GTK_ORIENTATION_VERTICAL);
-  // gtk_container_add (GTK_CONTAINER (main_box), label_edit_box);
-
-  // label and edits
-  //gtk_widget_set_size_request(GTK_WIDGET(label_edit_box), 700, 100);
 
   for (int i = 0; i < 2; i++)
   {
@@ -218,7 +301,7 @@ void open_authorezation(GtkWidget *button, char *event)
 
   //buttons
   button_log = gtk_button_new_with_label("LOG IN");
-  g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(open_chat), window);
+  g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
   gtk_container_add(GTK_CONTAINER(button_box), button_log);
   gtk_widget_set_size_request(GTK_WIDGET(button_log), 100, 100);
 
