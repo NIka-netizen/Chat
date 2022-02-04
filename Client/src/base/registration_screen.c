@@ -4,7 +4,8 @@ GtkWidget *Error_login, *Error_nickname, *Error_password, *Error_repeat_password
 
 void reopen_authorezation(GtkWidget *button)
 {
-  open_authorezation(button, "registration");
+  //open_authorezation(button, "registration");
+  open_authorezation(button);
 }
 
 int signup_button_clicked()
