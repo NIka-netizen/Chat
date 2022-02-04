@@ -4,7 +4,7 @@ NAME = uchat
 
 base = main authorization_screen chat_screen registration_screen \
 
-connection = connection_serv data_to_str \
+connection = data_to_str \
 
 dirs = base connection \
 

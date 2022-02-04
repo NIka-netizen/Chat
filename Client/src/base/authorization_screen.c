@@ -249,32 +249,29 @@ void open_authorezation(GtkWidget *window)
 {
   GError *error = NULL;
   GtkBuilder *builder = gtk_builder_new();
-  if (gtk_builder_add_from_file(builder, "/Users/vostroverk/Desktop/uchat/Client/src/GLADE/authorization_screen.glade", &error) == 0)
-    {
-        perror("Error loading file");
-        g_clear_error(&error);
-        exit(0);
-    }
+
+  if (gtk_builder_add_from_file(builder, "Client/src/authorization_screen.glade", &error) == 0)
+  {
+    g_printerr("Error loading file: %s\n", error->message);
+    g_clear_error(&error);
+    exit(0);
+  }
+
   GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "authorization_layout"));
 
-  GtkWidget *btn_box = GTK_WIDGET(gtk_builder_get_object(builder, "btn_box"));
-  GtkWidget *btn_box_FP = GTK_WIDGET(gtk_builder_get_object(builder, "forg_box_button"));
-
-  GtkWidget *label_panel = GTK_WIDGET(gtk_builder_get_object(builder, "label_auth"));
-  GtkWidget *label_login = GTK_WIDGET(gtk_builder_get_object(builder, "label_login"));
-  GtkWidget *label_password = GTK_WIDGET(gtk_builder_get_object(builder, "label_password"));
-
+  //edits
   GtkWidget *entry_login = GTK_WIDGET(gtk_builder_get_object(builder, "entry_login"));
-
   GtkWidget *entry_password = GTK_WIDGET(gtk_builder_get_object(builder, "entry_password"));
 
+  //buttons
   GtkWidget *button_log = GTK_WIDGET(gtk_builder_get_object(builder, "log_in_btn"));
-  GtkWidget *button_reg = GTK_WIDGET(gtk_builder_get_object(builder, "reg_btn"));
-  GtkWidget *button_forg_pass = GTK_WIDGET(gtk_builder_get_object(builder, "forg_button"));
+  g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
 
-  g_signal_connect(G_OBJECT(button_log), "clicked", G_CALLBACK(validation_authorization_data), authorization_layout);
-  g_signal_connect(G_OBJECT(button_reg), "clicked", G_CALLBACK(open_reg), authorization_layout); 
-  g_signal_connect(G_OBJECT(button_forg_pass), "clicked", G_CALLBACK(window_secret_word), authorization_layout);
+  GtkWidget *button_reg = GTK_WIDGET(gtk_builder_get_object(builder, "reg_btn"));
+  g_signal_connect(GTK_BUTTON(button_reg), "clicked", G_CALLBACK(open_reg), window);
+
+  GtkWidget *forg_password = GTK_WIDGET(gtk_builder_get_object(builder, "forg_btn"));
+  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
 
   gtk_container_add(GTK_CONTAINER(window), authorization_layout);
   g_object_unref(builder);
@@ -332,19 +329,7 @@ void open_authorezation(GtkWidget *window)
   // change_password_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
   // gtk_container_add(GTK_CONTAINER(main_box), change_password_box);
 
-  // //buttons
-  // button_log = gtk_button_new_with_label("LOG IN");
-  // g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
-  // gtk_container_add(GTK_CONTAINER(button_box), button_log);
-  // gtk_widget_set_size_request(GTK_WIDGET(button_log), 100, 100);
-
-  // button_reg = gtk_button_new_with_label("REGISTER NOW");
-  // g_signal_connect(GTK_BUTTON(button_reg), "clicked", G_CALLBACK(open_reg), window);
-  // gtk_container_add(GTK_CONTAINER(button_box), button_reg);
-
-  // forg_password = gtk_button_new_with_label("Forgot password");
-  // g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
-  // gtk_container_add(GTK_CONTAINER(change_password_box), forg_password);
+  /* ТУТ БЫЛИ КНОПКИ */
 
   // //css link
   // GtkCssProvider *provider = gtk_css_provider_new();

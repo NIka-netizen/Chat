@@ -4,7 +4,7 @@ static void activate(GtkApplication *app, gpointer user_data)
 {
   GError *error = NULL;
   GtkBuilder *builder = gtk_builder_new();
-  if (gtk_builder_add_from_file(builder, "/Users/vostroverk/Desktop/uchat/Client/src/GLADE/main_window.glade", &error) == 0)
+  if (!gtk_builder_add_from_file(builder, "Client/src/main_window.glade", &error))
     {
         g_printerr("Error loading file: %s\n", error->message);
         g_clear_error(&error);
@@ -15,8 +15,6 @@ static void activate(GtkApplication *app, gpointer user_data)
   open_authorezation(window);
   gtk_application_add_window(app, GTK_WINDOW(window));
   gtk_widget_show_all(window);
-
-
   //window
   // window = gtk_application_window_new(app);
   // gtk_window_set_title(GTK_WINDOW(window), "Registration");
