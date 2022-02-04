@@ -46,16 +46,18 @@ struct data_input_authorization{
     char *password;
 } authorization_data;
 
-char *write_to_json(char* num_f,char **arr_new);
 void data_to_str_authorization();
 void data_to_str_change_password();
 void data_to_str_check_SW();
 void data_to_str_registration();
 void set_connection(char *answer);
-void open_authorezation(GtkWidget *button, char *event);
+void open_authorezation(GtkWidget *button);
 void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void open_chat(GtkWidget *button);
 void window_secret_word(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void window_change_password(GtkWidget *button);
 
+
+void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer user_data);
+void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data);
 //#define BACKIMAGE_PATH "./Resources/images/back.jpg"

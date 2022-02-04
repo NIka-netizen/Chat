@@ -4,7 +4,8 @@ GtkWidget *Error_password, *Error_repeat_password, *Error_login, *Error_secret_w
 GtkWidget *entry_login, *entry_for_word;
 
 void reopen_authorezation2(GtkWidget *button){
-  open_authorezation(button, "forgot_password");
+  //open_authorezation(button, "forgot_password");
+  open_authorezation(button);
 }
 
 /* КОРРЕКТНОСТЬ ВВОДА ЛОГИНА И СЕКРЕТНОГО СЛОВА И ОТПРАВКА ДАННЫХ */
@@ -244,127 +245,159 @@ void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 }
 
 /* ОКНО С АВТОРИЗАЦИЕЙ */
-void open_authorezation(GtkWidget *button, char *event)
+void open_authorezation(GtkWidget *window)
 {
-  GtkWidget *window;
-  if (mx_strcmp(event, "registration") == 0){
-    window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
-    gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
-  }
-  else if (mx_strcmp(event, "start_app") == 0) {
-     window = button;
-  }
-  else if (!mx_strcmp(event, "forgot_password")) {
-    window = gtk_widget_get_parent(gtk_widget_get_parent(button));
-    gtk_widget_destroy(gtk_widget_get_parent(button));
-  }
-  else {
-    window = button;
-  }
-
-  GtkWidget *button_log;
-  GtkWidget *button_reg;
-  GtkWidget *forg_password;
-  GtkWidget *button_box;
-  GtkWidget *label_edit_box;
-  GtkWidget *main_box;
-  GtkWidget *change_password_box;
-  GtkWidget *label[2];
-
-  main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add(GTK_CONTAINER(window), main_box);
-
-  for (int i = 0; i < 2; i++)
-  {
-    edit[i] = gtk_entry_new();
-    if (i == 0)
-      label[i] = gtk_label_new("Login");
-    if (i == 1)
+  GError *error = NULL;
+  GtkBuilder *builder = gtk_builder_new();
+  if (gtk_builder_add_from_file(builder, "/Users/vostroverk/Desktop/uchat/Client/src/GLADE/authorization_screen.glade", &error) == 0)
     {
-      label[i] = gtk_label_new("Password");
-      gtk_entry_set_visibility(GTK_ENTRY(edit[1]), FALSE);
+        perror("Error loading file");
+        g_clear_error(&error);
+        exit(0);
     }
+  GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "authorization_layout"));
 
-    gtk_box_pack_start(GTK_BOX(main_box), label[i], 0, 0, 5);
-    gtk_box_pack_start(GTK_BOX(main_box), edit[i], 0, 0, 5);
+  GtkWidget *btn_box = GTK_WIDGET(gtk_builder_get_object(builder, "btn_box"));
+  GtkWidget *btn_box_FP = GTK_WIDGET(gtk_builder_get_object(builder, "forg_box_button"));
 
-    gtk_widget_set_size_request(GTK_WIDGET(edit[i]), 100, 50);
+  GtkWidget *label_panel = GTK_WIDGET(gtk_builder_get_object(builder, "label_auth"));
+  GtkWidget *label_login = GTK_WIDGET(gtk_builder_get_object(builder, "label_login"));
+  GtkWidget *label_password = GTK_WIDGET(gtk_builder_get_object(builder, "label_password"));
 
-    gtk_widget_show(edit[i]);
-    gtk_widget_show(label[i]);
-  }
+  GtkWidget *entry_login = GTK_WIDGET(gtk_builder_get_object(builder, "entry_login"));
 
-  button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-  gtk_container_add(GTK_CONTAINER(main_box), button_box);
-  change_password_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-  gtk_container_add(GTK_CONTAINER(main_box), change_password_box);
+  GtkWidget *entry_password = GTK_WIDGET(gtk_builder_get_object(builder, "entry_password"));
 
-  //buttons
-  button_log = gtk_button_new_with_label("LOG IN");
-  g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
-  gtk_container_add(GTK_CONTAINER(button_box), button_log);
-  gtk_widget_set_size_request(GTK_WIDGET(button_log), 100, 100);
+  GtkWidget *button_log = GTK_WIDGET(gtk_builder_get_object(builder, "log_in_btn"));
+  GtkWidget *button_reg = GTK_WIDGET(gtk_builder_get_object(builder, "reg_btn"));
+  GtkWidget *button_forg_pass = GTK_WIDGET(gtk_builder_get_object(builder, "forg_button"));
 
-  button_reg = gtk_button_new_with_label("REGISTER NOW");
-  g_signal_connect(GTK_BUTTON(button_reg), "clicked", G_CALLBACK(open_reg), window);
-  gtk_container_add(GTK_CONTAINER(button_box), button_reg);
+  g_signal_connect(G_OBJECT(button_log), "clicked", G_CALLBACK(validation_authorization_data), authorization_layout);
+  g_signal_connect(G_OBJECT(button_reg), "clicked", G_CALLBACK(open_reg), authorization_layout); 
+  g_signal_connect(G_OBJECT(button_forg_pass), "clicked", G_CALLBACK(window_secret_word), authorization_layout);
 
-  forg_password = gtk_button_new_with_label("Forgot password");
-  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
-  gtk_container_add(GTK_CONTAINER(change_password_box), forg_password);
+  gtk_container_add(GTK_CONTAINER(window), authorization_layout);
+  g_object_unref(builder);
+  
+  // GtkWidget *window;
+  // if (mx_strcmp(event, "registration") == 0){
+  //   window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  //   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  // }
+  // else if (mx_strcmp(event, "start_app") == 0) {
+  //    window = button;
+  // }
+  // else if (!mx_strcmp(event, "forgot_password")) {
+  //   window = gtk_widget_get_parent(gtk_widget_get_parent(button));
+  //   gtk_widget_destroy(gtk_widget_get_parent(button));
+  // }
+  // else {
+  //   window = button;
+  // }
 
-  //css link
-  GtkCssProvider *provider = gtk_css_provider_new();
-  gtk_css_provider_load_from_path(provider, "/Users/vostroverk/Desktop/uchat/Client/src/base/theme.css", NULL);
+  // GtkWidget *button_log;
+  // GtkWidget *button_reg;
+  // GtkWidget *forg_password;
+  // GtkWidget *button_box;
+  // GtkWidget *label_edit_box;
+  // GtkWidget *main_box;
+  // GtkWidget *change_password_box;
+  // GtkWidget *label[2];
 
-  //css add selector
+  // main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  // gtk_container_add(GTK_CONTAINER(window), main_box);
 
-  GtkStyleContext *context6_1;
-  context6_1 = gtk_widget_get_style_context(label[0]);
-  gtk_style_context_add_provider(context6_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context6_1, "label");
+  // for (int i = 0; i < 2; i++)
+  // {
+  //   edit[i] = gtk_entry_new();
+  //   if (i == 0)
+  //     label[i] = gtk_label_new("Login");
+  //   if (i == 1)
+  //   {
+  //     label[i] = gtk_label_new("Password");
+  //     gtk_entry_set_visibility(GTK_ENTRY(edit[1]), FALSE);
+  //   }
 
-  GtkStyleContext *context7_1;
-  context7_1 = gtk_widget_get_style_context(edit[0]);
-  gtk_style_context_add_provider(context7_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context7_1, "edit");
+  //   gtk_box_pack_start(GTK_BOX(main_box), label[i], 0, 0, 5);
+  //   gtk_box_pack_start(GTK_BOX(main_box), edit[i], 0, 0, 5);
 
-  GtkStyleContext *context6_2;
-  context6_2 = gtk_widget_get_style_context(label[1]);
-  gtk_style_context_add_provider(context6_2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context6_2, "label");
+  //   gtk_widget_set_size_request(GTK_WIDGET(edit[i]), 100, 50);
 
-  GtkStyleContext *context7_2;
-  context7_2 = gtk_widget_get_style_context(edit[1]);
-  gtk_style_context_add_provider(context7_2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context7_2, "edit");
+  //   gtk_widget_show(edit[i]);
+  //   gtk_widget_show(label[i]);
+  // }
 
-  GtkStyleContext *context8;
-  context8 = gtk_widget_get_style_context(button_reg);
-  gtk_style_context_add_provider(context8, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context8, "button_log");
+  // button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+  // gtk_container_add(GTK_CONTAINER(main_box), button_box);
+  // change_password_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+  // gtk_container_add(GTK_CONTAINER(main_box), change_password_box);
 
-  GtkStyleContext *context5;
-  context5 = gtk_widget_get_style_context(button_log);
-  gtk_style_context_add_provider(context5, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context5, "button_log1");
+  // //buttons
+  // button_log = gtk_button_new_with_label("LOG IN");
+  // g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
+  // gtk_container_add(GTK_CONTAINER(button_box), button_log);
+  // gtk_widget_set_size_request(GTK_WIDGET(button_log), 100, 100);
 
-  /* КОНТЕЙНЕРЫ */
+  // button_reg = gtk_button_new_with_label("REGISTER NOW");
+  // g_signal_connect(GTK_BUTTON(button_reg), "clicked", G_CALLBACK(open_reg), window);
+  // gtk_container_add(GTK_CONTAINER(button_box), button_reg);
 
-  GtkStyleContext *context2;
-  context2 = gtk_widget_get_style_context(forg_password);
-  gtk_style_context_add_provider(context2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context2, "Forgot password");
+  // forg_password = gtk_button_new_with_label("Forgot password");
+  // g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
+  // gtk_container_add(GTK_CONTAINER(change_password_box), forg_password);
 
-  GtkStyleContext *context3;
-  context3 = gtk_widget_get_style_context(window);
-  gtk_style_context_add_provider(context3, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context3, "window");
+  // //css link
+  // GtkCssProvider *provider = gtk_css_provider_new();
+  // gtk_css_provider_load_from_path(provider, "/Users/vostroverk/Desktop/uchat/Client/src/base/theme.css", NULL);
 
-  GtkStyleContext *context3_1;
-  context3_1 = gtk_widget_get_style_context(main_box);
-  gtk_style_context_add_provider(context3_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
-  gtk_style_context_add_class(context3_1, "main_box");
+  // //css add selector
 
-  gtk_widget_show_all(window);
+  // GtkStyleContext *context6_1;
+  // context6_1 = gtk_widget_get_style_context(label[0]);
+  // gtk_style_context_add_provider(context6_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context6_1, "label");
+
+  // GtkStyleContext *context7_1;
+  // context7_1 = gtk_widget_get_style_context(edit[0]);
+  // gtk_style_context_add_provider(context7_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context7_1, "edit");
+
+  // GtkStyleContext *context6_2;
+  // context6_2 = gtk_widget_get_style_context(label[1]);
+  // gtk_style_context_add_provider(context6_2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context6_2, "label");
+
+  // GtkStyleContext *context7_2;
+  // context7_2 = gtk_widget_get_style_context(edit[1]);
+  // gtk_style_context_add_provider(context7_2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context7_2, "edit");
+
+  // GtkStyleContext *context8;
+  // context8 = gtk_widget_get_style_context(button_reg);
+  // gtk_style_context_add_provider(context8, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context8, "button_log");
+
+  // GtkStyleContext *context5;
+  // context5 = gtk_widget_get_style_context(button_log);
+  // gtk_style_context_add_provider(context5, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context5, "button_log1");
+
+  // /* КОНТЕЙНЕРЫ */
+
+  // GtkStyleContext *context2;
+  // context2 = gtk_widget_get_style_context(forg_password);
+  // gtk_style_context_add_provider(context2, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context2, "Forgot password");
+
+  // GtkStyleContext *context3;
+  // context3 = gtk_widget_get_style_context(window);
+  // gtk_style_context_add_provider(context3, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context3, "window");
+
+  // GtkStyleContext *context3_1;
+  // context3_1 = gtk_widget_get_style_context(main_box);
+  // gtk_style_context_add_provider(context3_1, GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+  // gtk_style_context_add_class(context3_1, "main_box");
+
+  // gtk_widget_show_all(window);
 }
