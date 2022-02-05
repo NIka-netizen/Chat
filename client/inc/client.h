@@ -14,6 +14,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <sys/stat.h>
+
 
 #include "json-c/json.h"
 #include "mysql/mysql.h"
@@ -61,6 +63,32 @@ struct widgets_check_SW{
     GtkWidget *label_error_repeat_password;
 } widgets_forgot_password;
 
+struct widgets_check_registration{
+    GtkWidget *entry_login;
+    GtkWidget *entry_password;
+    GtkWidget *entry_repeat_password;
+    GtkWidget *entry_nickname;
+    GtkWidget *entry_secret_word;
+
+    GtkWidget *label_error_login;
+    GtkWidget *label_error_password;
+    GtkWidget *label_error_repeat_password;
+    GtkWidget *label_error_nickname;
+    GtkWidget *label_error_secret_word;
+} widgets_registration;
+
+struct data_authorization{
+    GtkWidget *login;
+    GtkWidget *password;
+
+    GtkWidget *Error_message;
+} authorization_log_pass;
+
+
+static struct data_params{
+    int argc;
+    char *argv[2];
+} params;
 /*---------------------------------------------------------------------------*/
 
 typedef struct
@@ -137,10 +165,10 @@ typedef struct chatuser_s
   char *ch_isadmin;
 } chatuser_t;
 
-/*---------------------------------------------------------------------------*/
+
 char *request_to_server(char *json_str);
 char *register_user (char *login, char *password, char *nickname, char *secret_word); // "0" IF LOGIN TAKEN, "USER_ID" IF ADDED SUCESSFULLY
-bool change_password (char *login, char *new_password, char *secret_word); // "0" IF LOGIN doesnt exist or secret_word incorrect, "USER_ID" IF updated SUCESSFULLy
+bool change_password(char *login, char *new_password); // "0" IF LOGIN doesnt exist or secret_word incorrect, "USER_ID" IF updated SUCESSFULLy
 char *autorize_user (char *login, char *password); // USER_ID if sucess, "0" IF something incorrect
 bool add_message(char *ch_id, char *u_id, char *text);
 bool delete_message(char *ms_id);
@@ -181,9 +209,14 @@ message_arr * get_50_messages(char *ch_id, char *last_msg_id);
 char *create_group_chat(char *u_id, char *chat_name);
 bool add_user_to_chat(char *ch_id, char *u_id);
 void server_set_connection();
+char *get_filename_extension(char *filename);
+bool request_send_file(char *json_str, char *fullfilename);
+bool recieve_file(char *fullfilename, char *info, int number);
+bool set_user_avatar(char *u_id, char *fullfilename);
+bool set_chat_avatar(char *ch_id, char *fullfilename);
+bool set_message_file(char *ms_id, char *fullfilename);
 /*---------------------------------------------------------------------------*/
 
-char *write_to_json(char* num_f,char **arr_new);
 void data_to_str_authorization();
 void data_to_str_change_password();
 void data_to_str_check_SW();
@@ -198,4 +231,5 @@ void window_change_password(GtkWidget *button);
 
 void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data);
+bool check_secret_word(char *login, char *secret_word);
 //#define BACKIMAGE_PATH "./Resources/images/back.jpg"

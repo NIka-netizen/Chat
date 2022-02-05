@@ -1,76 +1,78 @@
 #include "client.h"
 
-char *write_to_json(char* num_f,char **arr_new)
+char *write_to_json(char *num_f, char **arr_new)
 {
-	struct json_object *array;
-	struct json_object *object;
-	struct json_object *tmp;
-	array = json_object_new_array();
-	object = json_object_new_object();
-	int size = 0;
-	
-	for (size_t i = 0; arr_new[i]; i++)
-	{
-		size++;
-	}
-	
-	char **arr = (char **)malloc(sizeof(char *) * (size + 1));
-	arr[size] = NULL;
-	
-	for (int i = 0; i < size; i++)
-	{
-		arr[i] = mx_strnew(strlen(arr_new[i]));
-		strcpy(arr[i], arr_new[i]);
+    struct json_object *array;
+    struct json_object *object;
+    struct json_object *tmp;
+    array = json_object_new_array();
+    object = json_object_new_object();
+    int size = 0;
 
-	}
-	
-	for (size_t i = 0; arr[i]; i++)
-	{
-		tmp = json_object_new_string(arr[i]);
-		json_object_array_add(array, tmp);
-	}
+    for (size_t i = 0; arr_new[i]; i++)
+    {
+        size++;
+    }
 
-	// string_array_clear(arr,size);
-	tmp = json_object_new_string(num_f);
-	json_object_object_add(object, "function_number", tmp);
-	json_object_object_add(object, "data", array);
-	array = tmp = NULL;
-	char *answer = (char *)json_object_to_json_string(object);
-	return answer;
+    char **arr = (char **)malloc(sizeof(char *) * (size + 1));
+    arr[size] = NULL;
+
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = mx_strnew(strlen(arr_new[i]));
+        strcpy(arr[i], arr_new[i]);
+    }
+
+    for (size_t i = 0; arr[i]; i++)
+    {
+        tmp = json_object_new_string(arr[i]);
+        json_object_array_add(array, tmp);
+    }
+
+    // string_array_clear(arr,size);
+    tmp = json_object_new_string(num_f);
+    json_object_object_add(object, "function_number", tmp);
+    json_object_object_add(object, "data", array);
+    array = tmp = NULL;
+    char *answer = (char *)json_object_to_json_string(object);
+    return answer;
 }
 
 char *request_to_server(char *json_str)
 {
-    
+
     int a = write(data.socket_desc, json_str, strlen(json_str));
     puts(json_str);
-    if (a == (int)strlen(json_str)) {
+    if (a == (int)strlen(json_str))
+    {
         char answer[1024];
         size_t bytes_readed = read(data.socket_desc, answer, 1024);
-        answer[bytes_readed] = '\0'; 
+        answer[bytes_readed] = '\0';
         puts(answer);
         return strdup(answer);
     }
-    else {
+    else
+    {
         // //g_print("Request to server error!\n");
         puts("Request to server error");
         return strdup("Request to server error");
     }
 }
 
-char *register_user (char *login, char *password, char *nickname, char *secret_word) { // "0" IF LOGIN TAKEN, "USER_ID" IF ADDED SUCESSFULLY
+char *register_user(char *login, char *password, char *nickname, char *secret_word)
+{ // "0" IF LOGIN TAKEN, "USER_ID" IF ADDED SUCESSFULLY
 
     char *surname = "";
-   char *reg_data[] = {login,password,nickname,surname,secret_word,NULL};
+    char *reg_data[] = {login, password, nickname, surname, secret_word, NULL};
 
     // for (int i = 0; i < 4; i++) {
     //      write(1, reg_data[i], mx_strlen(reg_data[i]));
     //      write(1, "\n", 1);
     // }
-    
+
     /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
     char *json_str = write_to_json("1", reg_data);
-    char *response = request_to_server(json_str); 
+    char *response = request_to_server(json_str);
     // int answer = atoi(response);
     puts(response);
     return response;
@@ -78,41 +80,43 @@ char *register_user (char *login, char *password, char *nickname, char *secret_w
     //set_connection(answer);
 }
 
-// void data_to_str_check_SW () {
-//      char **login_SW = malloc(sizeof(char **)* 2);
-//     for (int i = 0; i < 2; i++) {
-//         if ((login_SW[i] = malloc(128)) == NULL) {
-//             exit(1);
-//         }
-//         if (i == 0) {
-//             login_SW[i] = login;//check_start.login;
-//         }
-//         if (i == 1) {
-//             login_SW[i] = secret_word;//check_start.secret_word;
-//         }
-//     }
-//     // for (int i = 0; i < 2; i++) {
-//     //      write(1, login_SW[i], mx_strlen(login_SW[i]));
-//     //      write(1, "\n", 1);
-//     // }
-//     /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
-//     //char *answer = write_to_json(num_func, new_str);
-//     /* Джисоновская строка передается на клиент*/
-//     //set_connection(answer);
-// }
-
-bool change_password (char *login, char *new_password, char *secret_word) { // "0" IF LOGIN doesnt exist or secret_word incorrect, "USER_ID" IF updated SUCESSFULLy
-    char *login_a[] = {login,NULL};
-    char *json_str = write_to_json("18",login_a);
+bool check_secret_word(char *login, char *secret_word)
+{
+    char *login_a[] = {login, NULL};
+    char *json_str = write_to_json("18", login_a);
     puts(json_str);
     char *u_id = "0";
     u_id = request_to_server(json_str);
     puts(u_id);
-    if(strcmp(u_id, "0") == 0)
+    if (strcmp(u_id, "0") == 0)
     {
         return false;
     }
-    char *data[] = {u_id,new_password,secret_word,NULL};
+    char *data[] = {u_id, secret_word, NULL};
+    json_str = write_to_json("33", data);
+    char *answer = request_to_server(json_str);
+    puts(json_str);
+    if (strcmp(answer, "1") == 0)
+    {
+        return true;
+    }
+    else
+        return false;
+}
+
+bool change_password(char *login, char *new_password)
+{ // "0" IF LOGIN doesnt exist or secret_word incorrect, "USER_ID" IF updated SUCESSFULLy
+    char *login_a[] = {login, NULL};
+    char *json_str = write_to_json("18", login_a);
+    puts(json_str);
+    char *u_id = "0";
+    u_id = request_to_server(json_str);
+    puts(u_id);
+    if (strcmp(u_id, "0") == 0)
+    {
+        return false;
+    }
+    char *data[] = {u_id, new_password, NULL};
     // for (int i = 0; i < 2; i++) {
     //     if ((login_password[i] = malloc(128)) == NULL) {
     //         exit(1);
@@ -121,7 +125,7 @@ bool change_password (char *login, char *new_password, char *secret_word) { // "
     //         login_password[i] = login;//check_second.login;
     //     }
     //     if (i == 1) {
-    //         login_password[i] = new_password;//check_second.password;  
+    //         login_password[i] = new_password;//check_second.password;
     //     }
     // }
 
@@ -129,8 +133,8 @@ bool change_password (char *login, char *new_password, char *secret_word) { // "
     //      write(1, login_password[i], mx_strlen(login_password[i]));
     //      write(1, "\n", 1);
     // }
-     
-   /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
+
+    /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
     json_str = write_to_json("22", data); //edit_password
     char *response = "0";
     response = request_to_server(json_str);
@@ -140,29 +144,19 @@ bool change_password (char *login, char *new_password, char *secret_word) { // "
     //set_connection(answer);
 }
 
-char *autorize_user (char *login, char *password) {  // USER_ID if sucess, "0" IF something incorrect
-    char **str_authorization_data = malloc(sizeof(char **)* 2);
-    for (int i = 0; i < 2; i++) {
-        if ((str_authorization_data[i] = malloc(128)) == NULL) {
-            exit(1);
-        }
-        if (i == 0) {
-            str_authorization_data[i] = login;// authorization_data.login;
-        }
-        if (i == 1) {
-            str_authorization_data[i] = password;//authorization_data.password;  
-        }
-    }
+char *autorize_user(char *login, char *password) // USER_ID if sucess, "0" IF something incorrect
+{
+    char *data[] = {login, password, NULL};
 
     // for (int i = 0; i < 2; i++) {
     //     write(1, str_authorization_data[i], mx_strlen(str_authorization_data[i]));
     //     write(1, "\n", 1);
     // }
 
-      /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
-    char *json_str = write_to_json("32", str_authorization_data);
+    /* ФОРМИРОВАНИЕ ДЖИСОНОВСКОЙ СТРОКИ */
+    char *json_str = write_to_json("32", data);
     char *response = request_to_server(json_str);
-    puts(response); 
+    puts(response);
     return response;
     /* Джисоновская строка передается на клиент*/
     //set_connection(answer);
@@ -171,89 +165,102 @@ char *autorize_user (char *login, char *password) {  // USER_ID if sucess, "0" I
 bool add_message(char *ch_id, char *u_id, char *text)
 {
     // ["ch_id", "u_id", "text", "is_media", "isforwarded", "isreply", "isseen", "isedited"]
-    char *data[] = {ch_id, u_id, text, "0","0","0","0","0",NULL};
+    char *data[] = {ch_id, u_id, text, "0", "0", "0", "0", "0", NULL};
     char *json_str = write_to_json("3", data);
     char *response = request_to_server(json_str);
-    if(atoi(response) > 0)
+    if (atoi(response) > 0)
     {
         return 1;
-    } else return 0;
-    
+    }
+    else
+        return 0;
 }
 
 bool delete_message(char *ms_id)
 {
-    char *data[] = {ms_id,NULL};
+    char *data[] = {ms_id, NULL};
     char *json_str = write_to_json("4", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;
+    }
+    else
+        return 0;
 }
 
 bool edit_message(char *ms_id)
 {
-    char *data[] = {ms_id,NULL};
+    char *data[] = {ms_id, NULL};
     char *json_str = write_to_json("5", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;    
+    }
+    else
+        return 0;
 }
 
 bool reply_message(char *ms_id, char *ch_id_to_reply)
 {
-    char *data[] = {ms_id,ch_id_to_reply,NULL};
+    char *data[] = {ms_id, ch_id_to_reply, NULL};
     char *json_str = write_to_json("7", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;     
+    }
+    else
+        return 0;
 }
 
 bool forward_message(char *ms_id, char *ch_id_to_reply)
 {
-    char *data[] = {ms_id,ch_id_to_reply,NULL};
+    char *data[] = {ms_id, ch_id_to_reply, NULL};
     char *json_str = write_to_json("6", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;  
+    }
+    else
+        return 0;
 }
 
 bool make_message_seen(char *ms_id)
 {
-    char *data[] = {ms_id,NULL};
+    char *data[] = {ms_id, NULL};
     char *json_str = write_to_json("11", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;      
+    }
+    else
+        return 0;
 }
 
 bool create_personal_chat(char *u_id, char *contact_id)
 {
-    char *data[] = {u_id,contact_id,NULL};
+    char *data[] = {u_id, contact_id, NULL};
     char *json_str = write_to_json("2", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0; 
+    }
+    else
+        return 0;
 }
 
 // RETURNS NULL IF NO CHATS
 chat_t **get_chats(char *u_id)
 {
-    char *data[] = {u_id,NULL};
+    char *data[] = {u_id, NULL};
     char *json_str = write_to_json("26", data);
     char *response = request_to_server(json_str);
-        if(strcmp(response,"0") == 0)
+    if (strcmp(response, "0") == 0)
     {
         return NULL;
     }
@@ -289,16 +296,16 @@ chat_t **get_chats(char *u_id)
     }
     free(values_obj);
     free(jobj);
-    return NULL;  // if no chats    
+    return NULL; // if no chats
 }
 
-//RETURNS NULL IF NO SUCH CHAT 
+//RETURNS NULL IF NO SUCH CHAT
 chatuser_t **get_chat_users(char *ch_id)
 {
-    char *data[] = {ch_id,NULL};
+    char *data[] = {ch_id, NULL};
     char *json_str = write_to_json("27", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"0") == 0)
+    if (strcmp(response, "0") == 0)
     {
         return NULL;
     }
@@ -334,7 +341,7 @@ chatuser_t **get_chat_users(char *ch_id)
     }
     free(values_obj);
     free(jobj);
-    return NULL;  // if no chats            
+    return NULL; // if no chats
 }
 
 // RETURNS NULL IF someshit happens
@@ -390,79 +397,93 @@ user_t *get_user_info(char *u_id)
 
 bool edit_user_name(char *u_id, char *new_name)
 {
-    char *data[] = {u_id,new_name,NULL};
+    char *data[] = {u_id, new_name, NULL};
     char *json_str = write_to_json("20", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;     
+    }
+    else
+        return 0;
 }
 
 bool edit_chat_name(char *ch_id, char *new_name)
 {
-    char *data[] = {ch_id,new_name,NULL};
+    char *data[] = {ch_id, new_name, NULL};
     char *json_str = write_to_json("23", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0; 
+    }
+    else
+        return 0;
 }
 
 bool delete_chat(char *ch_id) // also clears chat
 {
-    char *data[] = {ch_id,NULL};
+    char *data[] = {ch_id, NULL};
     char *json_str = write_to_json("24", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0; 
+    }
+    else
+        return 0;
 }
 
 bool add_contact_by_id(char *contact_id, char *u_id)
 {
-    char *data[] = {contact_id,u_id,NULL};
+    char *data[] = {contact_id, u_id, NULL};
     char *json_str = write_to_json("24", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0; 
+    }
+    else
+        return 0;
 }
 
 bool add_contact_by_login(char *contact_login, char *u_id)
 {
-    char *data[] = {contact_login,u_id,NULL};
+    char *data[] = {contact_login, u_id, NULL};
     char *json_str = write_to_json("24", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0; 
+    }
+    else
+        return 0;
 }
 
 bool block_contact(char *contact_id, char *u_id)
 {
-    char *data[] = {contact_id,u_id, NULL};
+    char *data[] = {contact_id, u_id, NULL};
     char *json_str = write_to_json("14", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;     
+    }
+    else
+        return 0;
 }
 
 bool unblock_contact(char *contact_id, char *u_id)
 {
-    char *data[] = {contact_id,u_id,NULL};
+    char *data[] = {contact_id, u_id, NULL};
     char *json_str = write_to_json("15", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;     
+    }
+    else
+        return 0;
 }
 
 void server_set_connection()
@@ -480,8 +501,8 @@ void server_set_connection()
     }
     else
     {
-        // сверстать окно об ошибке и вызывать здесь и вызывать функцию которая будет каждые 60 секунд вызывать повторное соединение с сервером рекурсией
-        // server_set_connection();
+        //сверстать окно об ошибке и вызывать здесь и вызывать функцию которая будет каждые 60 секунд вызывать повторное соединение с сервером рекурсией
+        //server_set_connection();
         //printf("Something wrong!\n");
         exit(1);
     }
@@ -500,9 +521,9 @@ void string_array_clear(char **arr, int size)
 
 // last object in this massive is NULL
 contact_t **get_all_contacts(char *function_number, char **data) // n17
-{   
+{
     // json_str = {"function_number":"17","data":["u_id"]};
-    char *json_str = write_to_json(function_number,data);
+    char *json_str = write_to_json(function_number, data);
     // response = {"contacts": [{ "c_id": "9", "u_name": "name surname", "u_avatar": "avatar_link", "u_lastSeen": "2022-02-01 15:37:00" }]}
     char *response = request_to_server(json_str);
     int exist = 0;
@@ -510,12 +531,11 @@ contact_t **get_all_contacts(char *function_number, char **data) // n17
     jobj = json_tokener_parse(response);
     exist = json_object_object_get_ex(jobj, "contacts", &values_obj);
     int length = json_object_array_length(values_obj);
-    printf("\n length = %d \n",length);
+    printf("\n length = %d \n", length);
     if (length > 0)
-    { 
+    {
         contact_t **contacts = malloc(sizeof(contact_t *) * (length + 1));
         contacts[length] = NULL;
-        /* поменять int на size_t */
         for (int i = 0; i < length; i++)
         {
             tmp_values = json_object_array_get_idx(values_obj, i);
@@ -570,7 +590,7 @@ char *strjoins_arr(const char **str_arr)
 
 char *strjoin(char *a, char *b)
 {
-    size_t sumlen = strlen(a)+strlen(b)+4;
+    size_t sumlen = strlen(a) + strlen(b) + 4;
     char *concat = (char *)malloc(sizeof(char) * sumlen);
     snprintf(concat, sumlen, "%s%s", a, b);
     return concat;
@@ -581,10 +601,11 @@ char *request_to_get_messages(char *request)
     puts(request);
     write(data.socket_desc, request, strlen(request));
     size_t recv_size = 0;
-    uint32_t size ;
+    uint32_t size;
     int rc = -1;
     write(data.socket_desc, &recv_size, sizeof(size_t));
-    do {
+    do
+    {
         rc = read(data.socket_desc, &size, sizeof(uint32_t));
     } while (rc < 0);
     size = ntohl(size);
@@ -594,8 +615,8 @@ char *request_to_get_messages(char *request)
     char p_array[1025];
     FILE *image = fopen("tmp", "w");
     printf("Sending %u\n", size);
-    int  nb = 0;
-    uint32_t  packet_size = 1024;
+    int nb = 0;
+    uint32_t packet_size = 1024;
     int real_size = 0;
     do
     {
@@ -607,31 +628,31 @@ char *request_to_get_messages(char *request)
         nb = recv(data.socket_desc, p_array, packet_size, 0);
         fwrite(p_array, 1, nb, image);
         size -= nb;
-        real_size +=nb;
+        real_size += nb;
         printf("Sending %u\n", size);
     } while (size > 0);
     puts("file recieved");
     fclose(image);
     // char *str = mx_file_to_str("tmp");
     FILE *file = fopen("tmp", "r");
-    
-    printf("size %d",real_size);
+
+    printf("size %d", real_size);
     // char *str;
     char *str = malloc(sizeof(char) * real_size);
-    fgets(str,real_size,file);
+    fgets(str, real_size, file);
     char *strstr = strdup(str);
-    strstr = strjoin(strstr,"}");
+    strstr = strjoin(strstr, "}");
     remove("tmp");
     return strstr;
 }
 
 // The most newer message will be the last in this array
-message_arr * get_50_messages(char *ch_id, char *last_msg_id) //n8
+message_arr *get_50_messages(char *ch_id, char *last_msg_id) //n8
 {
     // json_str = {"function_number":"8","data":["ch_id", "last_message_id"]};
-    char *data[] ={ch_id, last_msg_id, NULL};
-    char *json_str = write_to_json("8",data);
-    // response = {"messages": [{ "ch_id": "4", "ms_id": "438", "u_id": "8", "ms_text": 
+    char *data[] = {ch_id, last_msg_id, NULL};
+    char *json_str = write_to_json("8", data);
+    // response = {"messages": [{ "ch_id": "4", "ms_id": "438", "u_id": "8", "ms_text":
     // "abobus", "ms_datetime": "2022-02-03 13:33:03", "ms_isedited": "0", "ms_isforwarded": "0", "ms_ismedia": "0", "ms_isreply": "0", "ms_isseen": "0" }, ... ]}
     char *response = request_to_get_messages(json_str);
     puts(response);
@@ -651,7 +672,6 @@ message_arr * get_50_messages(char *ch_id, char *last_msg_id) //n8
         message_arr *arr_msgs = malloc(sizeof(message_arr));
         arr_msgs->messages = malloc(sizeof(message_t *));
         char *tmp;
-        /* тут тоже нужно поменять int на size_t */
         for (int j = 0; j < length; j++)
         {
             tmp_values = json_object_array_get_idx(values_obj, j);
@@ -707,22 +727,184 @@ message_arr * get_50_messages(char *ch_id, char *last_msg_id) //n8
 
 char *create_group_chat(char *u_id, char *chat_name)
 {
-    char *data[] = {u_id,chat_name,"",NULL};
+    char *data[] = {u_id, chat_name, "", NULL};
     char *json_str = write_to_json("28", data);
     char *response = request_to_server(json_str);
     int a = atoi(response);
-    if (a > 0){
+    if (a > 0)
+    {
         return response;
-    }   else return "0";
+    }
+    else
+        return "0";
 }
 
 bool add_user_to_chat(char *ch_id, char *u_id)
 {
-    char *data[] = {ch_id,u_id,NULL};
+    char *data[] = {ch_id, u_id, NULL};
     char *json_str = write_to_json("29", data);
     char *response = request_to_server(json_str);
-    if(strcmp(response,"1")==0)
+    if (strcmp(response, "1") == 0)
     {
         return 1;
-    } else return 0;       
+    }
+    else
+        return 0;
+}
+
+char *get_filename_extension(char *filename)
+{
+
+    int index = 0;
+    for (int i = strlen(filename) - 1; i >= 0; i--)
+    {
+        if (filename[i] == '.')
+        {
+            index = i;
+            break;
+        }
+    }
+    char *result = strdup(&filename[index]);
+    return result;
+}
+
+bool request_send_file(char *json_str, char *fullfilename)
+{
+    // char *answer = request_to_server(json_str);
+    int a = send(data.socket_desc, json_str, 2000, 0);
+    ssize_t read_return;
+    char buffer[BUFSIZ];
+    puts(fullfilename);
+    FILE *picture = fopen(fullfilename, "r");
+    fseek(picture, 0, SEEK_END);
+    uint32_t size = ftell(picture);
+    fseek(picture, 0, SEEK_SET);
+    //read(sock, &lol, sizeof(size_t));
+    size = htonl(size);
+    write(data.socket_desc, &size, sizeof(uint32_t));
+    size = ntohl(size);
+    printf("%u -- total size\n", size);
+    //read(sock, &lol, sizeof(size_t));
+    printf("Sending Picture as Byte Array\n");
+    char send_buffer[1024]; // no link between BUFSIZE and the file size
+    ssize_t send_size = 0;
+    size_t read_size = 0;
+    uint32_t packet_size = 1024;
+    do
+    {
+        if (packet_size > size)
+        {
+            packet_size = size;
+        }
+        read_size = fread(send_buffer, 1, packet_size, picture);
+        send_size = send(data.socket_desc, send_buffer, read_size, 0);
+        size -= send_size;
+        printf("%u -- size left, %zu - read size, %zd - send size\n", size, read_size, send_size);
+    } while (size > 0);
+    fclose(picture);
+    puts("file delivered");
+    return 1;
+}
+
+bool recieve_file(char *fullfilename, char *info, int number) // open for detailed info
+{
+    //number = 1 is u_id, 2 if ch_id, 3 if ms_id
+    //info should be "u_id", or "ch_id", or "ms_id"
+    char *data_s[] = {fullfilename, NULL};
+    char *json_str = write_to_json("31", data_s);
+    int a = send(data.socket_desc, json_str, 2000, 0);
+    char *path;
+    char *filename;
+    switch (number)
+    {
+    case 1:
+        path = strdup("./user_info/");
+        path = strjoin(path, info);
+        mkdir("./user_info", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        path = strjoin(path, "/");
+        filename = strdup(info);
+        filename = strjoin(filename, "_avatar");
+        break;
+    case 2:
+        path = strdup("./chat_info/");
+        path = strjoin(path, info);
+        mkdir("./chat_info", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        path = strjoin(path, "/");
+        filename = strdup(info);
+        filename = strjoin(filename, "_avatar");
+        break;
+    case 3:
+        path = strdup("./messages_files/");
+        path = strjoin(path, info);
+        mkdir("./messages_files", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        mkdir(path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        path = strjoin(path, "/");
+        filename = strdup(info);
+        filename = strjoin(filename, "_file");
+        break;
+    }
+    path = strjoin(path, filename);
+    char *fullpath = strdup("");
+    fullpath = strjoin(fullpath, path);
+    char *ext = get_filename_extension(fullfilename);
+    fullpath = strjoin(fullpath, ext);
+    puts(fullpath);
+
+    puts("Recieving file...");
+    uint32_t size;
+    int rc = -1;
+    do
+    {
+        rc = read(data.socket_desc, &size, sizeof(uint32_t));
+    } while (rc < 0);
+    size = ntohl(size);
+    printf("%u -- total size\n", size);
+    printf("Reading Picture Byte Array\n");
+    char p_array[1024];
+    FILE *image = fopen(fullpath, "w");
+    // printf("Sending %u\n", size);
+    size_t recv_size = 0;
+    uint32_t packet_size = 1024;
+    do
+    {
+        if (packet_size > size)
+        {
+            packet_size = size;
+        }
+        recv_size = recv(data.socket_desc, p_array, packet_size, 0);
+        printf("PS - %u, recv_size - %zu \n", packet_size, recv_size);
+        fwrite(p_array, 1, recv_size, image);
+        size -= recv_size;
+        printf("Size left  - %u\n", size);
+    } while (size > 0);
+    fclose(image);
+    puts("File recieved and saved to:");
+    puts(fullpath);
+    return true;
+}
+
+bool set_user_avatar(char *u_id, char *fullfilename)
+{
+    char *data[] = {"1", u_id, fullfilename, NULL};
+    char *json_str = write_to_json("30", data);
+    int response = request_send_file(json_str, fullfilename);
+    return response;
+}
+
+bool set_chat_avatar(char *ch_id, char *fullfilename)
+{
+    char *data[] = {"2", ch_id, fullfilename, NULL};
+    char *json_str = write_to_json("30", data);
+    int response = request_send_file(json_str, fullfilename);
+    return response;
+}
+
+bool set_message_file(char *ms_id, char *fullfilename)
+{
+    char *data[] = {"3", ms_id, fullfilename, NULL};
+    char *json_str = write_to_json("30", data);
+    int response = request_send_file(json_str, fullfilename);
+    return response;
 }
