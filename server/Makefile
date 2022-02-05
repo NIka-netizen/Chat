@@ -1,5 +1,3 @@
-
-
 SRC_DIR = src
 
 INC_DIR = inc
