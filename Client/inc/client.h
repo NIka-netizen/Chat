@@ -13,10 +13,10 @@
 #include <sys/time.h> //FD_SET, FD_ISSET, FD_ZERO macros
 #include <sys/types.h>
 #include <unistd.h>
-#include <gio/gio.h>
-#include <glib.h>
-#include <cairo.h>
 
+
+#include "json-c/json.h"
+#include "mysql/mysql.h"
 
 #include <netdb.h>
 #define SA struct sockaddr
@@ -27,7 +27,6 @@
 #include <openssl/rand.h>
 
 #include "libmx.h"
-
 struct data_check_SW{
     char *login;
     char *secret_word;
@@ -49,6 +48,11 @@ struct data_input_authorization{
     char *login;
     char *password;
 } authorization_data;
+
+struct widgets_check_SW{
+    GtkWidget *entry_login;
+    GtkWidget *entry_secret_word;
+} widgets_SW_login;
 
 /*---------------------------------------------------------------------------*/
 
@@ -178,7 +182,7 @@ void data_to_str_change_password();
 void data_to_str_check_SW();
 void data_to_str_registration();
 
-void open_authorezation(GtkWidget *button);
+void open_authorezation(GtkWidget *button, char *event);
 void open_reg(GtkWidget *button, GdkEvent *event, gpointer user_data);
 void open_chat(GtkWidget *button);
 void window_secret_word(GtkWidget *button, GdkEvent *event, gpointer user_data);

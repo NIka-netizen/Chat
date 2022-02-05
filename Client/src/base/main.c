@@ -12,7 +12,7 @@ static void activate(GtkApplication *app, gpointer user_data)
     }
   GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "main_window"));
   g_object_unref(builder);
-  open_authorezation(window);
+  open_authorezation(window, "start_app");
   gtk_application_add_window(app, GTK_WINDOW(window));
   gtk_widget_show_all(window);
   //window

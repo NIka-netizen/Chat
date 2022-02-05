@@ -515,7 +515,8 @@ contact_t **get_all_contacts(char *function_number, char **data) // n17
     { 
         contact_t **contacts = malloc(sizeof(contact_t *) * (length + 1));
         contacts[length] = NULL;
-        for (size_t i = 0; i < length; i++)
+        /* поменять int на size_t */
+        for (int i = 0; i < length; i++)
         {
             tmp_values = json_object_array_get_idx(values_obj, i);
             contacts[i] = malloc(sizeof(contact_t));
@@ -650,7 +651,8 @@ message_arr * get_50_messages(char *ch_id, char *last_msg_id) //n8
         message_arr *arr_msgs = malloc(sizeof(message_arr));
         arr_msgs->messages = malloc(sizeof(message_t *));
         char *tmp;
-        for (size_t j = 0; j < length; j++)
+        /* тут тоже нужно поменять int на size_t */
+        for (int j = 0; j < length; j++)
         {
             tmp_values = json_object_array_get_idx(values_obj, j);
 

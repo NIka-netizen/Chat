@@ -4,8 +4,7 @@ GtkWidget *Error_login, *Error_nickname, *Error_password, *Error_repeat_password
 
 void reopen_authorezation(GtkWidget *button)
 {
-  //open_authorezation(button, "registration");
-  open_authorezation(button);
+  open_authorezation(button, "registration");
 }
 
 int signup_button_clicked()
@@ -123,7 +122,7 @@ int signup_button_clicked()
   data_registration.secret_word = mx_strnew(mx_strlen((char *)secret_word));
   mx_strcpy(data_registration.secret_word, (char *)secret_word);
 
-  data_to_str_registration ();
+  //register_user(data_registration.login, data_registration.password, data_registration.nickname, data_registration.secret_word);
   gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
   gtk_entry_set_text(GTK_ENTRY(entry_for_nickname),"");
   gtk_entry_set_text(GTK_ENTRY(entry_password),"");

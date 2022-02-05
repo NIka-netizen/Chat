@@ -4,35 +4,36 @@ GtkWidget *Error_password, *Error_repeat_password, *Error_login, *Error_secret_w
 GtkWidget *entry_login, *entry_for_word;
 
 void reopen_authorezation2(GtkWidget *button){
-  //open_authorezation(button, "forgot_password");
-  open_authorezation(button);
+  open_authorezation(button, "forgot_password");
 }
 
 /* КОРРЕКТНОСТЬ ВВОДА ЛОГИНА И СЕКРЕТНОГО СЛОВА И ОТПРАВКА ДАННЫХ */
-int validation_login_secWord () 
-{
-  const gchar *login = gtk_entry_get_text(GTK_ENTRY(entry_login)); 
-  const gchar *secret_word = gtk_entry_get_text(GTK_ENTRY(entry_for_word)); 
+int validation_login_secWord (GtkWidget *button, GtkBuilder *builder) 
+{ 
+  char *login = (char *)gtk_entry_get_text(GTK_ENTRY(widgets_SW_login.entry_login));
+  char *secret_word = (char *)gtk_entry_get_text(GTK_ENTRY(widgets_SW_login.entry_word));
 
+  write(1, login, mx_strlen(login));
   /* ПРОВЕРКА ЛОГИНА */
   int length = mx_strlen(login);
   int checker = 0;
-
+  write(1, login, length);
+  
   if (length < 6 || length >= 20) 
   {
-    gtk_label_set_text(GTK_LABEL(Error_login),"Wrong login");  
+    gtk_label_set_text(GTK_LABEL(error_login), "Wrong login");  
     checker++;
   }
   else {
     for (int i = 0; i < length; i++) {
       if (!mx_isdigit(login[i]) && !mx_isalpha(login[i]) && login[i] != '_') {
-        gtk_label_set_text(GTK_LABEL(Error_login),"Wrong login");  
+        gtk_label_set_text(GTK_LABEL(error_login),"Wrong login");  
         checker++;
         gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
         break;
       }
       else {
-        gtk_label_set_text(GTK_LABEL(Error_login), ""); 
+        gtk_label_set_text(GTK_LABEL(error_login), ""); 
     
       }
     }
@@ -40,22 +41,22 @@ int validation_login_secWord ()
   /* ПРОВЕРКА НА СЕКРЕТНОЕ СЛОВО*/
   length = mx_strlen(secret_word);
   if (length < 3) {
-    gtk_label_set_text(GTK_LABEL(Error_secret_word),"Wrong secret word");  
+    gtk_label_set_text(GTK_LABEL(error_word),"Wrong secret word");  
     checker++;
-    gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+    gtk_entry_set_text(GTK_ENTRY(entry_word),"");
   }
   else
   {
     for (int i = 0; i < length; i++) {
       if(!mx_isdigit(secret_word[i]) && !mx_isalpha(secret_word[i]) && secret_word[i] != '_')
       {
-        gtk_label_set_text(GTK_LABEL(Error_secret_word),"Wrong secret word");  
+        gtk_label_set_text(GTK_LABEL(error_word),"Wrong secret word");  
         checker++;
-        gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+        gtk_entry_set_text(GTK_ENTRY(entry_word),"");
       }
       else 
       {
-        gtk_label_set_text(GTK_LABEL(Error_secret_word), ""); 
+        gtk_label_set_text(GTK_LABEL(error_word), ""); 
       }
     }
   }
@@ -67,18 +68,35 @@ int validation_login_secWord ()
   check_start.login = mx_strnew(mx_strlen((char *)login));
   mx_strcpy(check_start.login, (char *)login);
   check_start.secret_word = mx_strnew(mx_strlen((char *)secret_word));
-  mx_strcpy( check_start.secret_word, (char *)secret_word);
-  data_to_str_check_SW();
+  mx_strcpy(check_start.secret_word, (char *)secret_word);
+  //data_to_str_check_SW();
   gtk_entry_set_text(GTK_ENTRY(entry_login),""); 
-  gtk_entry_set_text(GTK_ENTRY(entry_for_word),"");
+  gtk_entry_set_text(GTK_ENTRY(entry_word),"");
   return 0;
 }
 
 /* КОРРЕКТНОСТЬ ВВОДА ПАРОЛЯ И ОТПРАВКА ДАННЫХ */
 int validation_passwords()
 {
-  const gchar *password = gtk_entry_get_text(GTK_ENTRY(entry_for_new_password)); 
-  const gchar *repeat_password = gtk_entry_get_text(GTK_ENTRY(entry_for_repeat_password));
+  GError *error = NULL;
+  GtkBuilder *builder = gtk_builder_new();
+
+  if (gtk_builder_add_from_file(builder, "Client/src/change_password_screen.glade", &error) == 0)
+  {
+    g_printerr("Error loading file: %s\n", error->message);
+    g_clear_error(&error);
+    exit(0);
+  }
+
+  GtkWidget *Error_password = GTK_WIDGET(gtk_builder_get_object(builder, "error_new_password"));
+  GtkWidget *Error_repeat_password = GTK_WIDGET(gtk_builder_get_object(builder, "error_repeat_password"));
+
+  GtkWidget *entry_for_new_password = GTK_WIDGET(gtk_builder_get_object(builder, "new_password_entry"));
+  GtkWidget *entry_for_repeat_password = GTK_WIDGET(gtk_builder_get_object(builder, "repeat_password_entry"));
+  
+  char *password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_for_new_password));
+  char *repeat_password = (char *)gtk_entry_get_text(GTK_ENTRY(entry_for_repeat_password));
+
   /* ПРОВЕРКА ПАРОЛЯ */
   int length = mx_strlen(password);
   int digit = 0;
@@ -122,25 +140,22 @@ int validation_passwords()
   }
   check_second.password = mx_strnew(mx_strlen((char *)password));
   mx_strcpy(check_second.password, (char *)password);
-  data_to_str_change_password();
+  //data_to_str_change_password();
   gtk_entry_set_text(GTK_ENTRY(entry_for_new_password),"");
   gtk_entry_set_text(GTK_ENTRY(entry_for_repeat_password),"");
   return 0;
 } 
 
 /* ПРОВОДНИК 1 */
-void valid_data_SW_login (GtkWidget *button, GdkEvent *event, gpointer user_data) {
-  GtkWidget *window;
-  window = gtk_widget_get_parent(gtk_widget_get_parent(button));
-  if (!validation_login_secWord()) {
+void valid_data_SW_login (GtkWidget *button, GtkBuilder *builder) {
+  if (!validation_login_secWord(button, builder))
+  {
     window_change_password(button);
   }
 }
 
 /* ПРОВОДНИК 2 */
 void valid_data_passwords(GtkWidget *button, GdkEvent *event, gpointer user_data) {
-  GtkWidget *window;
-  window = gtk_widget_get_parent(gtk_widget_get_parent(button));
   if (!validation_passwords())
     reopen_authorezation2(button);
 }
@@ -152,7 +167,7 @@ void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer 
   mx_strcpy(authorization_data.login, (char *)login);
   authorization_data.password = mx_strnew(mx_strlen((char *)password));
   mx_strcpy( authorization_data.password, (char *)password);
-  data_to_str_authorization ();
+  //data_to_str_authorization ();
   open_chat(button);
 }
 
@@ -160,46 +175,67 @@ void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer 
 void window_change_password(GtkWidget *button)
 {
   GtkWidget *window;
-  window = gtk_widget_get_parent(gtk_widget_get_parent(button));
-  gtk_widget_destroy(gtk_widget_get_parent(button));
-  /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
-  GtkWidget *main_layout;
-  GtkWidget *label_new_password;
-  GtkWidget *label_repeat_password;
-  GtkButton *apply_btn;
+  window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  GError *error = NULL;
+  GtkBuilder *builder = gtk_builder_new();
 
-  Error_password = gtk_label_new("");
-  Error_repeat_password = gtk_label_new("");
+  if (gtk_builder_add_from_file(builder, "Client/src/change_password_screen.glade", &error) == 0)
+  {
+    g_printerr("Error loading file: %s\n", error->message);
+    g_clear_error(&error);
+    exit(0);
+  }
 
-  main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add(GTK_CONTAINER(window), main_layout);
+  GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "change_password_layout"));
 
-  label_new_password = gtk_label_new("New password");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_new_password));
+  GtkWidget *apply_btn = GTK_WIDGET(gtk_builder_get_object(builder, "confirm_btn"));
+  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_passwords), builder);
 
-  entry_for_new_password = gtk_entry_new();
-  gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_new_password), "Password");
-  gtk_entry_set_visibility(GTK_ENTRY(entry_for_new_password), FALSE);
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_new_password));
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_password));
+  gtk_container_add(GTK_CONTAINER(window), authorization_layout);
+  g_object_unref(builder);
 
-  label_repeat_password = gtk_label_new("Repeat the password");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_repeat_password));
+  // GtkWidget *window;
+  // window = gtk_widget_get_parent(gtk_widget_get_parent(button));
+  // gtk_widget_destroy(gtk_widget_get_parent(button));
+  // /*  ВОТ ТУТ ОКНО СО СМЕНОЙ ПАРОЛЯ */
+  // GtkWidget *main_layout;
+  // GtkWidget *label_new_password;
+  // GtkWidget *label_repeat_password;
+  // GtkButton *apply_btn;
 
-  entry_for_repeat_password = gtk_entry_new();
-  gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_repeat_password), "Repeat password");
-  gtk_entry_set_visibility(GTK_ENTRY(entry_for_repeat_password), FALSE);
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_repeat_password));
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_repeat_password));
+  // Error_password = gtk_label_new("");
+  // Error_repeat_password = gtk_label_new("");
 
-  apply_btn = GTK_BUTTON(gtk_button_new());
-  gtk_button_set_label(apply_btn, "OK");
+  // main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  // gtk_container_add(GTK_CONTAINER(window), main_layout);
 
-  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_passwords), window); 
+  // label_new_password = gtk_label_new("New password");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_new_password));
 
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
+  // entry_for_new_password = gtk_entry_new();
+  // gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_new_password), "Password");
+  // gtk_entry_set_visibility(GTK_ENTRY(entry_for_new_password), FALSE);
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_new_password));
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_password));
 
-  gtk_widget_show_all(window);
+  // label_repeat_password = gtk_label_new("Repeat the password");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_repeat_password));
+
+  // entry_for_repeat_password = gtk_entry_new();
+  // gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_repeat_password), "Repeat password");
+  // gtk_entry_set_visibility(GTK_ENTRY(entry_for_repeat_password), FALSE);
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_repeat_password));
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_repeat_password));
+
+  // apply_btn = GTK_BUTTON(gtk_button_new());
+  // gtk_button_set_label(apply_btn, "OK");
+
+  // g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_passwords), window); 
+
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
+
+  // gtk_widget_show_all(window);
 }
 
 /* ОКНО С СЕКРЕТНЫМ СЛОВОМ И ЛОГИНОМ */
@@ -208,45 +244,92 @@ void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
   GtkWidget *window;
   window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
   gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
-  /*  ВОТ ТУТ ОКНО С ВВОДОМ СЕКРЕТНОГО СЛОВА */
+  GError *error = NULL;
+  GtkBuilder *builder = gtk_builder_new();
 
-  GtkWidget *main_layout;
+  if (gtk_builder_add_from_file(builder, "Client/src/recovery_password_screen.glade", &error) == 0)
+  {
+    g_printerr("Error loading file: %s\n", error->message);
+    g_clear_error(&error);
+    exit(0);
+  }
 
-  GtkWidget *label_secret_word;
-  GtkWidget *label_login;
-  GtkButton *apply_btn;
+  GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "recovery_password_layout"));
 
-  Error_login = gtk_label_new("");
-  Error_secret_word = gtk_label_new("");
+  widgets_SW_login.login_entry = GTK_WIDGET(gtk)
 
-  main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add(GTK_CONTAINER(window), main_layout);
+  GtkWidget *login_entry = GTK_WIDGET(gtk_builder_get_object(builder, "login_entry"));
+  //g_signal_connect(G_OBJECT(login_entry), "changed", G_CALLBACK(change_event_login_or_password), minSize);
+  g_signal_connect(G_OBJECT(login_entry), "activate", G_CALLBACK(valid_data_SW_login), builder);
 
-  label_login = gtk_label_new("Enter your login");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_login));
-  entry_login = gtk_entry_new();
-  gtk_entry_set_placeholder_text(GTK_ENTRY(entry_login), "Login");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_login));
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_login));
+  //GtkWidget *login_SW = GTK_WIDGET(gtk_builder_get_object(builder, "login_entry"));
+  //g_signal_connect(G_OBJECT(login_entry), "changed", G_CALLBACK(change_event_login_or_password), minSize);
+  //g_signal_connect(G_OBJECT(login_SW), "activate", G_CALLBACK(valid_data_SW_login), builder);
 
-  label_secret_word = gtk_label_new("Enter the secret word");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_secret_word));
-  entry_for_word = gtk_entry_new();
-  gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_word), "Secret word");
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_word));
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_secret_word));
+  GtkWidget *apply_btn = GTK_WIDGET(gtk_builder_get_object(builder, "confirm_btn"));
+  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_SW_login), builder);
 
-  apply_btn = GTK_BUTTON(gtk_button_new());
-  gtk_button_set_label(apply_btn, "OK");
-  g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_SW_login), window);
-  gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
+  gtk_container_add(GTK_CONTAINER(window), authorization_layout);
+  g_object_unref(builder);
 
-  gtk_widget_show_all(window);
+  // GtkWidget *window;
+  // window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  // gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  // /*  ВОТ ТУТ ОКНО С ВВОДОМ СЕКРЕТНОГО СЛОВА */
+
+  // GtkWidget *main_layout;
+
+  // GtkWidget *label_secret_word;
+  // GtkWidget *label_login;
+  // GtkButton *apply_btn;
+
+  // Error_login = gtk_label_new("");
+  // Error_secret_word = gtk_label_new("");
+
+  // main_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+  // gtk_container_add(GTK_CONTAINER(window), main_layout);
+
+  // label_login = gtk_label_new("Enter your login");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_login));
+  // entry_login = gtk_entry_new();
+  // gtk_entry_set_placeholder_text(GTK_ENTRY(entry_login), "Login");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_login));
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_login));
+
+  // label_secret_word = gtk_label_new("Enter the secret word");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(label_secret_word));
+  // entry_for_word = gtk_entry_new();
+  // gtk_entry_set_placeholder_text(GTK_ENTRY(entry_for_word), "Secret word");
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(entry_for_word));
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(Error_secret_word));
+
+  // apply_btn = GTK_BUTTON(gtk_button_new());
+  // gtk_button_set_label(apply_btn, "OK");
+  // g_signal_connect(apply_btn, "clicked", G_CALLBACK(valid_data_SW_login), window);
+  // gtk_container_add(GTK_CONTAINER(main_layout), GTK_WIDGET(apply_btn));
+
+  // gtk_widget_show_all(window);
 }
 
 /* ОКНО С АВТОРИЗАЦИЕЙ */
-void open_authorezation(GtkWidget *window)
+void open_authorezation(GtkWidget *button, char *event)
 {
+  GtkWidget *window;
+  if (mx_strcmp(event, "registration") == 0){
+    window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+    gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  }
+  else if (mx_strcmp(event, "start_app") == 0) {
+     window = button;
+  }
+  else if (!mx_strcmp(event, "forgot_password")) {
+    window = gtk_widget_get_parent(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+    gtk_widget_destroy(gtk_widget_get_parent(gtk_widget_get_parent(button)));
+  }
+  else {
+    window = button;
+  }
+
   GError *error = NULL;
   GtkBuilder *builder = gtk_builder_new();
 
@@ -259,10 +342,6 @@ void open_authorezation(GtkWidget *window)
 
   GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "authorization_layout"));
 
-  //edits
-  GtkWidget *entry_login = GTK_WIDGET(gtk_builder_get_object(builder, "entry_login"));
-  GtkWidget *entry_password = GTK_WIDGET(gtk_builder_get_object(builder, "entry_password"));
-
   //buttons
   GtkWidget *button_log = GTK_WIDGET(gtk_builder_get_object(builder, "log_in_btn"));
   g_signal_connect(GTK_BUTTON(button_log), "clicked", G_CALLBACK(validation_authorization_data), window);
@@ -271,7 +350,7 @@ void open_authorezation(GtkWidget *window)
   g_signal_connect(GTK_BUTTON(button_reg), "clicked", G_CALLBACK(open_reg), window);
 
   GtkWidget *forg_password = GTK_WIDGET(gtk_builder_get_object(builder, "forg_btn"));
-  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), window);
+  g_signal_connect(GTK_BUTTON(forg_password), "clicked", G_CALLBACK(window_secret_word), builder);
 
   gtk_container_add(GTK_CONTAINER(window), authorization_layout);
   g_object_unref(builder);

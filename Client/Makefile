@@ -1,6 +1,7 @@
 CC = clang
 LIB = libmx.a
 NAME = uchat
+LIBSDIR = libs
 
 base = main authorization_screen chat_screen registration_screen \
 
@@ -10,6 +11,8 @@ dirs = base connection \
 
 
 FILES = $(foreach dir, $(dirs), $($(dir):%=$(dir)/%))
+
+LIBS = -L$(LIBSDIR)/json-c/libjson-c.a -llibjson-c -L/usr/lib/x86_64-linux-gnu -lmysqlclient -lpthread -lz -lm -ldl -lpthread -lz -lm -ldl -lcrypt
 
 SRC_DIR = src/
 OBJ_DIR = obj/
@@ -23,9 +26,10 @@ WFLAGS = -Wall -Wextra -Werror -Wpedantic -Wno-unused-command-line-argument \
 	-Wno-unused-variable -Wno-unused-function -Wno-unused-parameter
 
 LFLAGS = -Iinc -I$(LIB_DIR)inc -I/usr/local/opt/openssl/include \
-	-L/usr/local/opt/openssl/lib -lssl -lcrypto -L. -lfmodex
+	-L/usr/local/opt/openssl/lib -lssl -lcrypto -L. \
+	-L$${HOME}/.brew/lib/ -I$${HOME}/.brew/include/ -I$(INC_DIR) -lmysqlclient -ljson-c ` pkg-config --cflags --libs gmodule-2.0`
 
-CFLAGS = -Ofast -march=native -flto -rdynamic
+#CFLAGS = -Ofast -march=native -flto -rdynamic
 
 PKGCONFIG = `pkg-config --libs --cflags gtk+-3.0`
 PGKCONFIGFLAGS = `pkg-config --cflags gtk+-3.0`
@@ -60,11 +64,11 @@ $(LIB):
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c
 	@$(PRINT) "$K$G COMPILING $Y[$M$(TARGET)$Y] $B$(<:$(SRC_DIR)%=%)$D\r"
-	@$(COMPILE) $(CFLAGS) $(PGKCONFIGFLAGS) -o $@ -c $<
+	@$(COMPILE)  $(PGKCONFIGFLAGS) -o $@ -c $<
 
 $(NAME): $(OBJ_DIR) $(OBJ)
 	@$(PRINT) "$K$G COMPILING $Y[$M$(TARGET)$Y] $R$(NAME)$D\r"
-	@$(COMPILE) $(CFLAGS) $(PKGCONFIG) $(LIB_PATH) $(OBJ) -o $(NAME)
+	@$(COMPILE)  $(PKGCONFIG) $(LIB_PATH) $(OBJ) -o $(NAME)
 	@$(PRINT) "$K"
 
 clean:
