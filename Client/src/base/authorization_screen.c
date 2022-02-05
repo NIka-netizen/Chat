@@ -256,13 +256,14 @@ void window_secret_word (GtkWidget *button, GdkEvent *event, gpointer user_data)
 
   GtkWidget *authorization_layout = GTK_WIDGET(gtk_builder_get_object(builder, "recovery_password_layout"));
 
-  widgets_SW_login.login_entry = GTK_WIDGET(gtk)
+  widgets_SW_login.label_error_login = GTK_WIDGET(gtk_builder_get_object(builder, "Error_login"));
+  widgets_SW_login.label_error_SW = GTK_WIDGET(gtk_builder_get_object(builder, "error_secret_word"));
 
-  GtkWidget *login_entry = GTK_WIDGET(gtk_builder_get_object(builder, "login_entry"));
+  widgets_SW_login.login_entry = GTK_WIDGET(gtk_builder_get_object(builder, "login_entry"));
   //g_signal_connect(G_OBJECT(login_entry), "changed", G_CALLBACK(change_event_login_or_password), minSize);
   g_signal_connect(G_OBJECT(login_entry), "activate", G_CALLBACK(valid_data_SW_login), builder);
 
-  //GtkWidget *login_SW = GTK_WIDGET(gtk_builder_get_object(builder, "login_entry"));
+  //widgets_SW_login.entry_secret_word = GTK_WIDGET(gtk_builder_get_object(builder, "secret_word_entry"));
   //g_signal_connect(G_OBJECT(login_entry), "changed", G_CALLBACK(change_event_login_or_password), minSize);
   //g_signal_connect(G_OBJECT(login_SW), "activate", G_CALLBACK(valid_data_SW_login), builder);
 
