@@ -1,0 +1,71 @@
+
+.button {
+    margin-top: 100px;
+}
+
+.button_reg, .button_log, .change_password{
+    background: rgb(253, 253, 253);
+    border-radius:30px ;
+}
+
+.change_password {
+    margin-top: 100px;
+}
+
+.window{
+    background: rgb(108, 70, 139);
+}
+
+.main_box{
+    border-color: peachpuff;
+    margin-left: 200px;
+    margin-right: 200px;
+}
+
+.edit{
+    border-color: peachpuff;
+    background: rgb(252, 244, 210);
+}
+
+/* .label_edit{
+    background-color: blue;
+    height: 1000px;
+} */
+
+
+.label{
+    background-color: blue;
+    margin-right: 300px;
+    text-align-last: left;
+    font-size: 25px;
+    color: white;
+}
+
+.edit{
+    background: rgb(255, 255, 255);
+    border-radius: 20px;
+    font-size: 20px;
+}
+
+
+.button_log{
+    background-color: rgb(245, 245, 245);
+    margin-right: 200PX;
+}
+.button_log1{
+    /*background-image: url("/Users/vostroverk/Desktop/uchat/Content/avatar.png");*/
+    background-size: 100%;
+    background-repeat: no-repeat;
+
+}
+.change_password{
+    background: yellow;
+    
+}
+.button{
+    background: yellowgreen;
+    
+}
+.button_ex{
+    width: 30%;
+}
