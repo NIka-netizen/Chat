@@ -72,6 +72,8 @@ int validation_login_secWord (GtkWidget *button, GtkBuilder *builder, GtkWidget 
   if (!check_secret_word(check_second.login, check_start.secret_word))
   {
     gtk_label_set_text(GTK_LABEL(*error_entry_secret_word),"Some information is incorrect");  
+    gtk_entry_set_text(GTK_ENTRY(widgets_forgot_password.entry_login),"");
+    gtk_entry_set_text(GTK_ENTRY(widgets_forgot_password.entry_secret_word),"");
     return 1;
   }
   gtk_entry_set_text(GTK_ENTRY(widgets_forgot_password.entry_login),""); 
@@ -167,7 +169,6 @@ void validation_authorization_data(GtkWidget *button, GdkEvent *event, gpointer 
   mx_strcpy( authorization_data.password, (char *)password);
   
   char *author_user = autorize_user(authorization_data.login, authorization_data.password);
-  write(1, author_user, mx_strlen(author_user));
 
     /*проверка из бд*/
   if (mx_strcmp(author_user, "0") == 0) {

@@ -127,16 +127,17 @@ int signup_button_clicked(GtkWidget *button, GtkBuilder *builder, GtkWidget **Er
   user_t data2;
   chatuser_t data3;
 
-  char *id = mx_strnew(mx_strlen(register_user(data_registration.login, data_registration.password, data_registration.nickname, data_registration.secret_word)));
-  mx_strcpy(id, register_user(data_registration.login, data_registration.password, data_registration.nickname, data_registration.secret_word));
-  if (id == 0) {
-    gtk_label_set_text(GTK_LABEL(*Error_secret_word),"Login already exists");  
+  char *id = register_user(data_registration.login, data_registration.password, data_registration.nickname, data_registration.secret_word);
+  
+  if (mx_strcmp(id, "0") == 0) {
+    gtk_label_set_text(GTK_LABEL(*Error_login),"Login already exists");  
+    gtk_entry_set_text(GTK_ENTRY(widgets_registration.entry_login),""); 
     return 1;
   }
   else {
-    data1.u_id = id;
-    data2.u_id = id;
-    data3.u_id = id;
+    data1.u_id = mx_strdup(id);
+    data2.u_id = mx_strdup(id);
+    data3.u_id = mx_strdup(id);
   }
   gtk_entry_set_text(GTK_ENTRY(widgets_registration.entry_login),""); 
   gtk_entry_set_text(GTK_ENTRY(widgets_registration.entry_password),"");
