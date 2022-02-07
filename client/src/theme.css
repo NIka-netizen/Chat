@@ -1,0 +1,83 @@
+
+.box_authorization {
+    background: #51392D;
+}
+
+.entry_login, .entry_password, .entry_repeat_password, .entry_nickname, .entry_secret_word {
+    font-family: Alief_Bold;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    color: #000000;
+
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+}
+
+.label_error_auth, .label_error_login, .label_error_sw, .label_error_password, .label_error_repeat_password, .label_error_nickname {
+    color: #FFFFFF;
+}
+
+.image {
+
+    background: url("Client/src/CookieChat.png");
+}
+
+.button_reg, .button_log, .apply_btn
+{
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 13px;
+
+    color: rgba(0, 0, 0, 0.74);
+
+
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+}
+
+.forg_password {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    border: 0;
+    color: #FFFFFF;
+    background: transparent;
+}
+.forg_password:hover{
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    border: 0;
+    color: #FFFFFF;
+    background: #818181;
+}
+
+.label_password, .label_login, .label_repeat_password, .label_nickname, .label_secret_word {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+.label_cookiechat {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 25px;
+    color: #FFFFFF;
+}
+
+.label_authorization, .label_registration, .label_recovery, .create_new_pass{
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #FFFFFF;
+}
