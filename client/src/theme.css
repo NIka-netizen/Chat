@@ -1,0 +1,116 @@
+
+.box_authorization {
+    background: #51392D;
+}
+
+.start_chat_layout {
+    background: #412d24;
+}
+
+.entry_login, .entry_nickname, .entry_login, .entry_password, .entry_repeat_password, .entry_nickname, .entry_secret_word {
+    font-family: Alief_Bold;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
+    color: #000000;
+
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+}
+
+.label_error_auth, .label_error_login, .label_error_sw, .label_error_password, .label_error_repeat_password, .label_error_nickname {
+    color: #FFFFFF;
+    font-size: 13px;
+    text-decoration-line: underline;
+}
+
+.image {
+
+    background: url("Client/src/CookieChat.png");
+}
+
+.button_reg, .button_change_password, .button_change_avatar, .button_log_outs, .button_log, .apply_btn, .save_changes {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 13px;
+
+    color: rgba(0, 0, 0, 0.74);
+
+
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 12px;
+}
+
+.forg_password {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    border: 0;
+    color: #FFFFFF;
+    background: transparent;
+}
+
+.forg_password:hover{
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 15px;
+    border: 0;
+    color: #FFFFFF;
+    background: #818181;
+}
+
+.label_password, .label_login, .label_nickname,  .start_message, .label_login, .label_repeat_password, .label_nickname, .label_secret_word {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+.label_cookiechat {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 25px;
+    color: #FFFFFF;
+}
+
+.label_authorization, .label_setting, .label_registration, .label_recovery, .create_new_pass{
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+.bottom_panel, .bottom_panel2 {
+    background: #836455;
+    border-radius: 5px;
+}
+
+
+.top_searching {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+}
+
+.bottom_entry {
+    background:  #FFFFFF;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+.contact_button {
+    font-family: Abhaya Libre;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 10px;
+    color: #FFEEEE;
+}
+
